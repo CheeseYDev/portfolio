@@ -540,16 +540,22 @@ Commands.RankRequired = {
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('nav a');
   const onScroll = () => {
-    let current = '';
-    sections.forEach(sec => {
-      const top = sec.offsetTop - 120;
-      if (window.scrollY >= top) current = sec.getAttribute('id');
-    });
+    let current = sections.length ? sections[0].getAttribute('id') : '';
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if (atBottom) {
+      current = sections[sections.length - 1].getAttribute('id');
+    } else {
+      sections.forEach(sec => {
+        const top = sec.offsetTop - 120;
+        if (window.scrollY >= top) current = sec.getAttribute('id');
+      });
+    }
     navLinks.forEach(link => {
       link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
   };
   window.addEventListener('scroll', onScroll);
+  window.addEventListener('resize', onScroll);
   onScroll();
 
   // reveal on scroll
