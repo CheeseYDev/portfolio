@@ -1,11 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chez — Roblox Systems Scripter</title>
+<meta name="theme-color" content="#0a0d13">
+<meta name="description" content="Chez is a Roblox systems scripter focused on maintainable Luau architecture and clean interfaces.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0d13;
+    --panel: #10141d;
+    --panel-2: #151a25;
+    --line: #232a38;
+    --text: #e7e9ee;
+    --text-dim: #8993a6;
+    --amber: #e8a94c;
+    --amber-dim: #b8853b;
+    --teal: #52d1c4;
+    --danger: #e0645a;
+    --radius: 10px;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before{
+    content:"";
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(232,169,76,0.06), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(82,209,196,0.05), transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  a{ color: inherit; text-decoration: none; }
+  ::selection{ background: var(--amber); color: #0a0d13; }
+  .lines{
+    position: relative;
+    padding-left: 56px;
+  }
+  .lines::before{
+    content: "";
+    position: absolute;
+    left: 30px; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--line);
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position: sticky; top:0; z-index: 100;
+    background: rgba(10,13,19,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-wrap{
+    max-width: 1100px; margin: 0 auto;
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .brand{
+    font-family: var(--mono); font-size: 14px; color: var(--text-dim);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .brand .dot{ width:8px; height:8px; border-radius:50%; background: var(--amber); box-shadow: 0 0 8px var(--amber); animation: blink 2.2s infinite; }
+  @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:.35} }
+  nav ul{ list-style:none; display:flex; gap: 28px; }
+  nav a{
+    font-family: var(--mono); font-size: 13px; color: var(--text-dim);
+    letter-spacing: 0.02em; transition: color .2s;
+    position: relative;
+  }
+  nav a:hover, nav a.active{ color: var(--amber); }
+  nav a::before{ content: "· "; color: var(--amber); opacity:0; transition: opacity .2s; }
+  nav a:hover::before, nav a.active::before{ opacity:1; }
+  .nav-toggle{ display:none; background:none; border:none; color:var(--text); font-size:22px; cursor:pointer; }
+
+  @media (max-width: 720px){
+    nav ul{
+      position: absolute; top: 100%; left:0; right:0;
+      background: var(--panel); border-bottom: 1px solid var(--line);
+      flex-direction: column; padding: 16px 32px; gap: 16px;
+      display: none;
+    }
+    nav ul.open{ display:flex; }
+    .nav-toggle{ display:block; }
+  }
+
+  section{ position: relative; z-index:1; max-width: 1100px; margin: 0 auto; padding: 100px 32px; }
+  .eyebrow{
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em;
+    color: var(--amber); text-transform: uppercase; margin-bottom: 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:"//"; color: var(--amber-dim); }
+  h1,h2,h3{ font-family: var(--display); font-weight: 600; letter-spacing: -0.01em; }
+  h2{ font-size: 30px; margin-bottom: 8px; }
+  .section-sub{ color: var(--text-dim); font-size: 15px; margin-bottom: 44px; max-width: 560px; }
+
+  /* ---------- HERO ---------- */
+  #home{ padding-top: 80px; padding-bottom: 60px; }
+  .hero-grid{
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: start;
+  }
+  @media (max-width: 900px){ .hero-grid{ grid-template-columns: 1fr; } }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing:0.08em;
+    color: #7bdcc4; background: rgba(82,209,196,0.08); border: 1px solid rgba(82,209,196,0.3);
+    padding: 6px 12px; border-radius: 100px; margin-bottom: 26px;
+  }
+  .status-pill .dot{ width:6px;height:6px;border-radius:50%; background:#52d1c4; }
+  h1.title{ font-size: clamp(34px, 5vw, 52px); line-height: 1.12; margin-bottom: 22px; }
+  h1.title .hl{ color: var(--amber); }
+  .lede{ color: var(--text-dim); font-size: 17px; max-width: 480px; margin-bottom: 34px; }
+  .cta-row{ display:flex; gap: 14px; flex-wrap: wrap; }
+  .btn{
+    font-family: var(--mono); font-size: 13px; padding: 13px 22px; border-radius: 8px;
+    border: 1px solid var(--line); transition: all .2s;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{ background: var(--amber); color: #0a0d13; border-color: var(--amber); font-weight: 600; }
+  .btn-primary:hover{ background: #f2ba66; }
+  .btn-ghost:hover{ border-color: var(--amber); color: var(--amber); }
+
+  .code-panel{
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5);
+  }
+  .code-tabbar{
+    display:flex; align-items:center; gap: 8px;
+    padding: 10px 14px; background: var(--panel-2); border-bottom: 1px solid var(--line);
+  }
+  .code-tabbar .tab{
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+    padding: 4px 10px; border-radius: 6px;
+  }
+  .code-tabbar .tab.active{ background: var(--bg); color: var(--amber); }
+  .code-dots{ display:flex; gap:6px; margin-right: 6px; }
+  .code-dots span{ width:9px; height:9px; border-radius:50%; background: var(--line); }
+  pre.code{
+    font-family: var(--mono); font-size: 12.5px; padding: 20px 18px; overflow-x:auto;
+    color: #c7cede;
+  }
+  pre.code .k{ color: #e8a94c; }
+  pre.code .s{ color: #7bdcc4; }
+  pre.code .c{ color: #5b6577; font-style: italic; }
+  pre.code .p{ color: #8f9bb3; }
+  pre.code .n{ color: #d99cf0; }
+
+  /* ---------- PROJECTS ---------- */
+  .project-card{
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 30px; margin-bottom: 22px;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 26px; align-items: start;
+    transition: border-color .2s;
+  }
+  .project-card:hover{ border-color: #33405a; }
+  @media (max-width: 800px){ .project-card{ grid-template-columns: 1fr; } .project-media{ order: -1; width: 100% !important; height: 180px !important; } }
+  .project-index{
+    font-family: var(--mono); font-size: 13px; color: var(--text-dim);
+    writing-mode: horizontal-tb;
+  }
+  .project-media{
+    width: 220px; height: 140px; border-radius: 8px; overflow: hidden;
+    background: var(--panel-2); border: 1px dashed var(--line);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .project-media img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+  .project-media .media-placeholder{
+    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+    text-align: center; padding: 0 16px; line-height: 1.5;
+  }
+  .project-tags{ display:flex; gap:8px; flex-wrap:wrap; margin: 14px 0 16px; }
+  .tag{
+    font-family: var(--mono); font-size: 11px; color: var(--teal);
+    background: rgba(82,209,196,0.08); border: 1px solid rgba(82,209,196,0.25);
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .project-card h3{ font-size: 20px; margin-bottom: 4px; }
+  .project-role{ font-family: var(--mono); font-size: 12px; color: var(--amber); margin-bottom: 14px; display:block; }
+  .project-card p{ color: var(--text-dim); font-size: 14.5px; max-width: 620px; }
+  .project-card.placeholder{
+    border-style: dashed; display:flex; align-items:center; justify-content:center;
+    min-height: 120px; color: var(--text-dim); font-family: var(--mono); font-size: 13px;
+    text-align: center;
+  }
+
+  /* ---------- SYSTEMS SHOWCASE ---------- */
+  .showcase-card{
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 30px; margin-bottom: 24px;
+    display: grid; grid-template-columns: 1fr 1.05fr; gap: 32px; align-items: start;
+  }
+  @media (max-width: 850px){ .showcase-card{ grid-template-columns: 1fr; } }
+  .showcase-media{
+    position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px;
+    background: var(--panel-2); border: 1px dashed var(--line);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .showcase-media video{ width:100%; height:100%; object-fit: cover; display:block; }
+  .showcase-media .media-placeholder{
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim); text-align:center; padding: 0 20px;
+  }
+  .showcase-media .play-ring{
+    width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; margin: 0 auto 12px;
+    color: var(--amber); font-size: 14px;
+  }
+  .showcase-role{ font-family: var(--mono); font-size: 12px; color: var(--amber); display:block; margin-bottom: 6px; }
+  .showcase-card h3{ font-size: 19px; margin-bottom: 10px; }
+  .showcase-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 14px; }
+  .showcase-card > div > p.showcase-desc{ color: var(--text-dim); font-size: 14px; margin-bottom: 18px; }
+  .mini-code-panel{
+    background: #0d1017; border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+  }
+  .mini-code-tabbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 8px 12px; background: var(--panel-2); border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+  }
+  .code-toggle{
+    background:none; border: none; color: var(--teal); font-family: var(--mono);
+    font-size: 11px; cursor: pointer; display:flex; align-items:center; gap:4px;
+  }
+  .mini-code-body{
+    max-height: 130px; overflow: hidden; position: relative;
+    transition: max-height .35s ease;
+  }
+  .mini-code-body::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:40px;
+    background: linear-gradient(to bottom, transparent, #0d1017);
+    transition: opacity .2s;
+  }
+  .mini-code-body.expanded{ max-height: 900px; }
+  .mini-code-body.expanded::after{ opacity: 0; }
+  .mini-code-body pre.code{ padding: 16px; font-size: 12px; }
+
+  /* ---------- SYSTEMS GRID ---------- */
+  .systems-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 800px){ .systems-grid{ grid-template-columns: 1fr; } }
+  .system-card{
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px;
+  }
+  .system-card .icon{ font-size: 20px; margin-bottom: 14px; color: var(--amber); }
+  .system-card h3{ font-size: 16px; margin-bottom: 8px; }
+  .system-card p{ color: var(--text-dim); font-size: 13.5px; }
+
+  /* ---------- TECH STACK ---------- */
+  .stack-groups{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+  @media (max-width: 700px){ .stack-groups{ grid-template-columns: 1fr; } }
+  .stack-group h3{
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+  }
+  .stack-chips{ display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{
+    font-family: var(--mono); font-size: 13px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 9px 14px; color: var(--text);
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact-panel{
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 44px; display:grid; grid-template-columns: 1.2fr 1fr; gap: 40px;
+  }
+  @media (max-width: 750px){ .contact-panel{ grid-template-columns: 1fr; } }
+  .contact-panel h2{ margin-bottom: 14px; }
+  .discord-btn{
+    display:inline-flex; align-items:center; gap: 12px;
+    background: #0a0d13; border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px 20px; margin-top: 18px; transition: border-color .2s;
+  }
+  .discord-btn:hover{ border-color: var(--teal); }
+  .discord-btn .d-icon{
+    width: 36px; height:36px; border-radius:8px; background: #5865F2;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+  }
+  .discord-btn .d-text .label{ font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+  .discord-btn .d-text .handle{ font-family: var(--mono); font-size: 14px; color: var(--text); }
+  .meta-list{ display:flex; flex-direction:column; gap: 18px; }
+  .meta-row{ display:flex; justify-content:space-between; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
+  .meta-row .k{ font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+  .meta-row .v{ font-family: var(--mono); font-size: 12px; color: var(--amber); }
+
+  footer{
+    text-align:center; padding: 40px 32px; color: var(--text-dim);
+    font-family: var(--mono); font-size: 12px; border-top: 1px solid var(--line);
+  }
+
+  .reveal{ opacity:0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform: translateY(0); }
+</style>
 </head>
 <body>
-    <h1>Test</h1>
+
+<header>
+  <div class="nav-wrap">
+    <div class="brand"><span class="dot"></span> chez.dev</div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    <nav>
+      <ul id="navList">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#showcases">Showcases</a></li>
+        <li><a href="#systems">Systems</a></li>
+        <li><a href="#tech-stack">Tech Stack</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section id="home">
+  <div class="hero-grid">
+    <div>
+      <span class="status-pill"><span class="dot"></span> AVAILABLE FOR WORK</span>
+      <h1 class="title">Roblox Systems Scripter <span class="hl">Developer</span></h1>
+      <p class="lede">I build Luau systems that hold up after launch — clean ModuleScript architecture, DataStore-backed saving, and UI that stays readable as a project grows.</p>
+      <div class="cta-row">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+      </div>
+    </div>
+    <div class="code-panel reveal">
+      <div class="code-tabbar">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="tab active">DevProfile.lua</div>
+      </div>
+      <pre class="code"><span class="c">-- exposed config, not a personality test</span>
+<span class="k">local</span> DevProfile = {}
+
+DevProfile.Name = <span class="s">"Chez"</span>
+DevProfile.Roles = {
+  <span class="s">"Systems Scripter"</span>,
+  <span class="s">"UI Developer"</span>,
+}
+
+DevProfile.Focus = {
+  Architecture = <span class="s">"ModuleScript-based"</span>,
+  Persistence  = <span class="s">"DataStore"</span>,
+  Comms        = <span class="s">"RemoteEvents"</span>,
+  Tooling      = <span class="s">"Roblox Studio"</span>,
+}
+
+DevProfile.Status = <span class="s">"Open to work"</span>
+
+<span class="k">return</span> <span class="n">table.freeze</span>(DevProfile)</pre>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <h2>Recent builds</h2>
+  <p class="section-sub">Roblox projects with real systems underneath — not just menus, but the logic that keeps them working.</p>
+
+  <div class="project-card reveal">
+    <div class="project-index">01</div>
+    <div>
+      <span class="project-role">Systems Scripter</span>
+      <h3>Clean the Waterpark</h3>
+      <div class="project-tags">
+        <span class="tag">Luau</span>
+        <span class="tag">DataStore</span>
+        <span class="tag">Moderation Tools</span>
+        <span class="tag">AI / Pathfinding</span>
+      </div>
+      <p>A Roblox experience built end-to-end in Studio, covering admin and moderation tooling, a first-person item system with pickup and stacking, cross-place teleportation with custom loading screens, and pathfinding-based NPC behavior.</p>
+    </div>
+    <!-- Swap this placeholder for: <img src="assets/screenshots/your-screenshot.png" alt="Clean the Waterpark screenshot"> -->
+    <div class="project-media">
+      <div class="media-placeholder">+ Add screenshot</div>
+    </div>
+  </div>
+
+</section>
+
+<section id="showcases">
+  <h2>System Showcases</h2>
+  <p class="section-sub">Clips, tags, and the actual config behind each system — built so behavior can be tuned without touching core logic.</p>
+
+  <div class="showcase-card reveal">
+    <!-- Swap this placeholder for: <video controls poster="assets/thumbs/dispatcher.jpg"><source src="assets/clips/dispatcher.mp4" type="video/mp4"></video> -->
+    <div class="showcase-media">
+      <div class="media-placeholder">
+        <div class="play-ring">▶</div>
+        + Add gameplay clip
+      </div>
+    </div>
+    <div>
+      <h3>Rank-Based Command Dispatcher</h3>
+      <div class="showcase-tags">
+        <span class="tag">Moderation</span>
+        <span class="tag">Rank-Based</span>
+        <span class="tag">Config-Driven</span>
+      </div>
+      <p class="showcase-desc">A chat command system with rank-checked permissions and a shared argument-validation pattern, built so new commands can be added without repeating permission or parsing logic.</p>
+      <div class="mini-code-panel">
+        <div class="mini-code-tabbar">
+          <span>DispatcherConfig.lua</span>
+          <button class="code-toggle" onclick="this.closest('.showcase-card').querySelector('.mini-code-body').classList.toggle('expanded'); this.textContent = this.textContent.includes('Show') ? 'v Hide full code' : 'v Show full code';">v Show full code</button>
+        </div>
+        <div class="mini-code-body">
+          <pre class="code"><span class="k">local</span> Commands = {}
+
+Commands.RequiredArgs = {
+  kick = { <span class="s">"player"</span>, <span class="s">"reason"</span> },
+  ban  = { <span class="s">"player"</span>, <span class="s">"duration"</span>, <span class="s">"reason"</span> },
+  warn = { <span class="s">"player"</span>, <span class="s">"reason"</span> },
+}
+
+Commands.RankRequired = {
+  kick = <span class="n">2</span>,
+  ban  = <span class="n">3</span>,
+  warn = <span class="n">1</span>,
+}
+
+<span class="k">local function</span> hasPermission(rank, command)
+  <span class="k">return</span> rank &gt;= (Commands.RankRequired[command] <span class="k">or</span> <span class="n">math.huge</span>)
+<span class="k">end</span>
+
+<span class="k">local function</span> validateArgs(command, args)
+  <span class="k">for</span> _, argName <span class="k">in</span> Commands.RequiredArgs[command] <span class="k">or</span> {} <span class="k">do</span>
+    <span class="k">if</span> args[argName] == <span class="k">nil</span> <span class="k">then</span>
+      <span class="k">return</span> <span class="k">false</span>, <span class="s">"Missing arg: "</span> .. argName
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="k">return</span> <span class="k">true</span>
+<span class="k">end</span>
+
+<span class="k">return</span> Commands</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section id="systems">
+  <h2>Systems I'm comfortable owning</h2>
+  <p class="section-sub">The parts of a project that don't show up in a trailer, but decide whether it survives past week one.</p>
+
+  <div class="systems-grid">
+    <div class="system-card reveal">
+      <div class="icon">◆</div>
+      <h3>Moderation &amp; Admin Tooling</h3>
+      <p>Command dispatchers with rank-based permissions, argument validation, and DataStore-backed ban logs with full audit trails.</p>
+    </div>
+    <div class="system-card reveal">
+      <div class="icon">◆</div>
+      <h3>Item &amp; Inventory State</h3>
+      <p>First-person viewmodels with pickup, stacking, and idle animation, backed by structured inventory state that's easy to extend.</p>
+    </div>
+    <div class="system-card reveal">
+      <div class="icon">◆</div>
+      <h3>NPC &amp; Traversal Logic</h3>
+      <p>PathfindingService-driven AI with line-of-sight detection and stuck recovery, plus cross-place teleportation with custom loading UI.</p>
+    </div>
+  </div>
+</section>
+
+<section id="tech-stack">
+  <h2>Toolkit</h2>
+  <p class="section-sub">What I actually build with, day to day.</p>
+
+  <div class="stack-groups">
+    <div class="stack-group">
+      <h3>Programming</h3>
+      <div class="stack-chips">
+        <span class="chip">Luau</span>
+        <span class="chip">ModuleScripts</span>
+        <span class="chip">DataStore</span>
+        <span class="chip">RemoteEvents</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <h3>Development</h3>
+      <div class="stack-chips">
+        <span class="chip">Roblox Studio</span>
+        <span class="chip">GitHub</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Let's build something maintainable</h2>
+  <p class="section-sub">Open to Roblox commission work — UI, gameplay systems, or both.</p>
+
+  <div class="contact-panel reveal">
+    <div>
+      <h2 style="font-size:20px;">Reach out on Discord</h2>
+      <p style="color:var(--text-dim); font-size:14px;">Fastest way to get in touch. Usually online daily.</p>
+      <a href="#" class="discord-btn">
+        <span class="d-icon">
+          <svg width="20" height="16" viewBox="0 0 127.14 96.36" xmlns="http://www.w3.org/2000/svg" fill="#ffffff">
+            <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21a105.73,105.73,0,0,0,32.17,16.15,77.7,77.7,0,0,0,6.89-11.11,68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14C129.24,52.24,122.9,28.61,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+          </svg>
+        </span>
+        <span class="d-text">
+          <div class="label">DISCORD</div>
+          <div class="handle">@cheesey_real</div>
+        </span>
+      </a>
+    </div>
+    <div class="meta-list">
+      <div class="meta-row"><span class="k">STATUS</span><span class="v">Open to work</span></div>
+      <div class="meta-row"><span class="k">RESPONSE TIME</span><span class="v">Usually within a day</span></div>
+      <div class="meta-row"><span class="k">PRICING</span><span class="v">Negotiable</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>Designed and built by Chez for portfolio use.</footer>
+
+<script>
+  // mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navList = document.getElementById('navList');
+  navToggle.addEventListener('click', () => navList.classList.toggle('open'));
+  navList.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navList.classList.remove('open')));
+
+  // active link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  const onScroll = () => {
+    let current = '';
+    sections.forEach(sec => {
+      const top = sec.offsetTop - 120;
+      if (window.scrollY >= top) current = sec.getAttribute('id');
+    });
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  };
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+
+  // reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
 </body>
 </html>
