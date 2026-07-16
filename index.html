@@ -447,7 +447,7 @@ DevProfile.Status = <span class="s">"Open to work"</span>
       screenshot below automatically. If Roblox's API ever blocks the cross-origin request, it falls
       back to the static message / local image instead of hanging on "Loading...".
     -->
-    <div class="project-card reveal" data-roblox-place-id="2753915549">
+    <div class="project-card reveal" data-roblox-place-id="">
       <!-- Local fallback screenshot — used until (or unless) a live thumbnail loads above -->
       <div class="project-media">
         <img src="Images/clean-the-waterpark.png" alt="Clean the Waterpark screenshot"
@@ -456,7 +456,7 @@ DevProfile.Status = <span class="s">"Open to work"</span>
       </div>
       <div class="project-card-body">
         <span class="game-category">Live Roblox Experience</span>
-        <h3>🧹 Clean the Waterpark</h3>
+        <h3>🧹 <span class="game-title">Clean the Waterpark</span></h3>
         <span class="project-role">My role: Scripter</span>
         <div class="game-stats">
           <div class="game-desc">🎮 <span class="stat-desc">Add a Place ID above to load a live description.</span></div>
@@ -473,7 +473,6 @@ DevProfile.Status = <span class="s">"Open to work"</span>
           <span class="tag">Roblox</span>
           <span class="tag">Public Release</span>
         </div>
-        <p>A Roblox experience built end-to-end in Studio, covering admin and moderation tooling, a first-person item system with pickup and stacking, cross-place teleportation with custom loading screens, and pathfinding-based NPC behavior.</p>
         <div style="margin-top:18px;">
           <!-- Update this href to your real Roblox game URL -->
           <a href="#" target="_blank" rel="noopener noreferrer" class="btn-roblox">▶ Play on Roblox</a>
@@ -753,7 +752,15 @@ Commands.RankRequired = {
   }, { threshold: 0.15 });
   revealEls.forEach(el => io.observe(el));
 
-  // live Roblox game stats (playing now / visits / favorites / max players / description)
+  // live Roblox game stats (name / playing now / visits / favorites / max players / thumbnail)
+  //
+  // Roblox's APIs don't send CORS headers for arbitrary browser origins, so a direct fetch()
+  // from this page gets silently blocked — that's almost certainly why nothing loaded before.
+  // Routing through a public CORS proxy (allorigins.win) works around that. Heads up: this
+  // depends on that third-party proxy staying up — if it's ever down, stats just won't load.
+  function corsUrl(url){
+    return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  }
   function formatCount(n){
     if (n === undefined || n === null) return '--';
     if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
@@ -765,7 +772,7 @@ Commands.RankRequired = {
     const img = card.querySelector('.project-media img');
     if (!img) return;
     try{
-      const res = await fetch(`https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&countPerUniverse=1&size=768x432&format=Png`);
+      const res = await fetch(corsUrl(`https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds=${universeId}&countPerUniverse=1&size=768x432&format=Png`));
       if (!res.ok) throw new Error('thumbnail fetch failed');
       const data = await res.json();
       const thumb = data.data && data.data[0] && data.data[0].thumbnails && data.data[0].thumbnails[0];
@@ -778,35 +785,37 @@ Commands.RankRequired = {
   }
   async function loadRobloxStats(card){
     const placeId = card.getAttribute('data-roblox-place-id');
-    const descEl = card.querySelector('.stat-desc');
     if (!placeId) return; // no Place ID set yet — leave the placeholder text as-is
     try{
       let universeId = card.dataset.universeId;
       if (!universeId) {
-        const uniRes = await fetch(`https://apis.roblox.com/universes/v1/places/${placeId}/universe`);
+        const uniRes = await fetch(corsUrl(`https://apis.roblox.com/universes/v1/places/${placeId}/universe`));
         if (!uniRes.ok) throw new Error('universe lookup failed');
         const uniData = await uniRes.json();
         universeId = uniData.universeId;
         card.dataset.universeId = universeId;
       }
       loadGameThumbnail(card, universeId);
-      const gameRes = await fetch(`https://games.roblox.com/v1/games?universeIds=${universeId}`);
+      const gameRes = await fetch(corsUrl(`https://games.roblox.com/v1/games?universeIds=${universeId}`));
       if (!gameRes.ok) throw new Error('game lookup failed');
       const gameData = await gameRes.json();
       const game = gameData.data && gameData.data[0];
       if (!game) throw new Error('no game data returned');
-      if (descEl) descEl.textContent = game.description ? game.description.slice(0, 140) : game.name;
+      const titleEl = card.querySelector('.game-title');
+      const descEl = card.querySelector('.stat-desc');
       const ccuEl = card.querySelector('.stat-ccu');
       const visitsEl = card.querySelector('.stat-visits');
       const favEl = card.querySelector('.stat-favorites');
       const maxEl = card.querySelector('.stat-maxplayers');
+      if (titleEl) titleEl.textContent = game.name;
+      if (descEl) descEl.textContent = game.description ? game.description.slice(0, 140) : game.name;
       if (ccuEl) ccuEl.textContent = formatCount(game.playing);
       if (visitsEl) visitsEl.textContent = formatCount(game.visits);
       if (favEl) favEl.textContent = formatCount(game.favoritedCount);
       if (maxEl) maxEl.textContent = game.maxPlayers ?? '--';
     } catch (err){
-      // Roblox's API can block cross-origin browser requests — fall back gracefully instead of hanging
-      if (descEl) descEl.textContent = 'Live stats unavailable right now — visit the game page for details.';
+      // Roblox's API (or the CORS proxy) can occasionally fail — leave existing values as-is
+      // rather than overwriting them with an error message.
     }
   }
   const gameCards = document.querySelectorAll('.project-card[data-roblox-place-id]');
