@@ -458,10 +458,11 @@ DevProfile.Focus = {
   Tuning       = <span class="s">"shared config modules"</span>,
 }
 
-DevProfile.Principles = {
-  <span class="s">"server owns the truth"</span>,
-  <span class="s">"data over duplication"</span>,
-  <span class="s">"verify it live, then ship"</span>,
+DevProfile.Delivery = {
+  Handoff       = <span class="s">"readable code, commented config"</span>,
+  Testing       = <span class="s">"verified in a live session"</span>,
+  Updates       = <span class="s">"daily, while the work is running"</span>,
+  AfterDelivery = <span class="s">"I fix bugs in what I shipped"</span>,
 }
 
 DevProfile.Status = <span class="s">"Open to work"</span>
@@ -494,7 +495,7 @@ DevProfile.Status = <span class="s">"Open to work"</span>
   <div class="section-head">
     <div class="kicker">System Showcases</div>
     <h2>Systems I've built</h2>
-    <p class="section-sub">Gameplay systems from Gardeners Legacy, each built around exposed config so behavior can be tuned without rewriting the logic underneath.</p>
+    <p class="section-sub">Reusable gameplay systems I've built and shipped, each designed around exposed config so behavior can be tuned without rewriting the logic underneath.</p>
   </div>
 
   <!-- 01 -->
@@ -582,7 +583,7 @@ DayNightData.EASE_BLEND = <span class="n">0.7</span>
         <span class="tag">HUD</span>
         <span class="tag">Balancing</span>
       </div>
-      <p class="showcase-desc">XP from harvesting, fishing and selling, each scaled by what the player actually did — fruit weight and mutations, fish weight and rarity, or a slice of the sale. Awards hook in only on genuine success, so a harvest refused by the inventory cap pays nothing. The curve lives in one shared module the HUD bar reads from, so there's a single place it can be wrong.</p>
+      <p class="showcase-desc">A progression system that pulls XP from several different activities, each payout scaled by what the player actually did rather than a flat number per action. Awards hook in only on genuine success, so an action the game refuses pays nothing. The curve lives in one shared module that the HUD bar reads from too, so there's a single place it can ever be wrong — and rebalancing is a number change, not a rewrite.</p>
       <div class="mini-code-panel">
         <div class="mini-code-tabbar">
           <span>XPData.lua</span>
@@ -629,41 +630,41 @@ XPData.FishRarity = {
 
   <!-- 03 -->
   <div class="showcase-card reveal">
-    <!-- Place a clip at Clips/treasure.mp4 to replace this placeholder -->
+    <!-- Place a clip at Clips/loot.mp4 to replace this placeholder -->
     <div class="showcase-media">
       <video controls preload="metadata"
              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <source src="Clips/treasure.mp4" type="video/mp4">
+        <source src="Clips/loot.mp4" type="video/mp4">
       </video>
       <div class="media-placeholder" style="display:none;">
         <div class="play-ring">&#9654;</div>
-        Add a clip at Clips/treasure.mp4
+        Add a clip at Clips/loot.mp4
       </div>
     </div>
     <div>
-      <h3>Tier-Weighted Treasure &amp; Loot</h3>
+      <h3>Tier-Weighted Loot &amp; Spawning</h3>
       <div class="showcase-tags">
         <span class="tag">Loot Tables</span>
         <span class="tag">Spawning</span>
         <span class="tag">Economy</span>
       </div>
-      <p class="showcase-desc">Chests and collectibles spawn inside a marker volume with rejection sampling, so they only land on valid ground — move or resize the marker and no code changes. The loot pool is derived from the shop stock rather than restated, so a new shop item can never silently fail to drop. Rewards route through the same stacking and inventory-cap rules the shop uses.</p>
+      <p class="showcase-desc">Collectibles and containers spawn inside a marker volume using rejection sampling, so they only ever land on valid ground — move or resize the marker in Studio and nothing in code changes. Rarity is rolled by tier first, then uniformly inside it, so the largest tier can't quietly dominate the odds. The item pool is derived from data the game already owns rather than restated, which means a newly added item can't silently fail to drop.</p>
       <div class="mini-code-panel">
         <div class="mini-code-tabbar">
-          <span>TreasureData.lua</span>
+          <span>LootData.lua</span>
           <button class="code-toggle" onclick="toggleCode(this)">&#9662; Show full code</button>
         </div>
         <div class="mini-code-body">
-          <pre class="code"><span class="k">local</span> TreasureData = {}
+          <pre class="code"><span class="k">local</span> LootData = {}
 
-TreasureData.Tiers = {
+LootData.Tiers = {
 	<span class="s">"Common"</span>, <span class="s">"Uncommon"</span>, <span class="s">"Rare"</span>, <span class="s">"Epic"</span>,
 	<span class="s">"Legendary"</span>, <span class="s">"Mythical"</span>, <span class="s">"Exotic"</span>,
 }
 
 <span class="c">-- roll the TIER first, then uniformly inside it, so the</span>
 <span class="c">-- tier holding the most items can't dominate the odds</span>
-TreasureData.Chests = {
+LootData.Chests = {
 	Bronze = {
 		MaxAlive = <span class="n">6</span>, Respawn = <span class="n">45</span>, Rewards = <span class="n">1</span>,
 		TierWeights = {
@@ -682,21 +683,21 @@ TreasureData.Chests = {
 }
 
 <span class="c">-- spawn area is a marker part; resize it freely, no code change</span>
-TreasureData.Area = {
-	Path = { <span class="s">"TreasureSpawns"</span>, <span class="s">"Oasis"</span> },
+LootData.Area = {
+	Path = { <span class="s">"LootSpawns"</span>, <span class="s">"Area01"</span> },
 	RequiredMaterial = <span class="n">Enum.Material.Sand</span>,
 	ColorTolerance   = <span class="n">0.02</span>,
 	MaxSpawnAttempts = <span class="n">40</span>,
 }
 
-TreasureData.Prompt = {
+LootData.Prompt = {
 	Style = <span class="n">Enum.ProximityPromptStyle.Custom</span>,
 	KeyboardKeyCode = <span class="n">Enum.KeyCode.E</span>,
 	HoldDuration = <span class="n">0.25</span>,
 	RequiresLineOfSight = <span class="k">false</span>,
 }
 
-<span class="k">return</span> <span class="n">table.freeze</span>(TreasureData)</pre>
+<span class="k">return</span> <span class="n">table.freeze</span>(LootData)</pre>
         </div>
       </div>
     </div>
@@ -716,13 +717,13 @@ TreasureData.Prompt = {
       </div>
     </div>
     <div>
-      <h3>Mob AI &amp; Melee Combat</h3>
+      <h3>NPC AI &amp; Melee Combat</h3>
       <div class="showcase-tags">
         <span class="tag">AI</span>
         <span class="tag">Server-Authoritative</span>
         <span class="tag">Performance</span>
       </div>
-      <p class="showcase-desc">Mobs wander, aggro, chase and attack without PathfindingService — one throttled Heartbeat loop steps every mob instead of a thread each, which is what keeps it cheap. The melee hitbox queries the mob folder only, so it is structurally unable to hit a player. The attack remote carries no arguments: the server reads the attacker's own position and re-checks range and cooldown itself.</p>
+      <p class="showcase-desc">NPCs that wander, aggro, chase and attack without PathfindingService — one throttled loop steps every NPC instead of a thread each, which is what keeps it cheap at scale. The melee hitbox queries the NPC collection only, so it is structurally unable to hit a player rather than relying on a check that could be wrong. The attack remote carries no arguments at all: the server reads the attacker's own position and re-validates range and cooldown itself.</p>
       <div class="mini-code-panel">
         <div class="mini-code-tabbar">
           <span>CombatData.lua</span>
@@ -743,7 +744,7 @@ CombatData.Knife = {
 }
 
 CombatData.Mobs = {
-	Scorpion = {
+	Grunt = {
 		Health       = <span class="n">100</span>,
 		WalkSpeed    = <span class="n">6</span>,
 		ChaseSpeed   = <span class="n">14</span>,
