@@ -241,6 +241,10 @@
     color: var(--amber); font-size: 13px; background: rgba(232,169,76,0.06);
   }
   .showcase-card h3{ font-size: 18.5px; margin-bottom: 11px; }
+  .media-credit{
+    font-family: var(--mono); font-size: 10.5px; color: var(--text-dim);
+    opacity: 0.6; margin-top: 8px; letter-spacing: 0.02em;
+  }
   .showcase-tags{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom: 14px; }
   .tag{
     font-family: var(--mono); font-size: 10.5px; color: var(--teal);
@@ -501,15 +505,18 @@ DevProfile.Status = <span class="s">"Open to work"</span>
   <!-- 01 -->
   <div class="showcase-card reveal">
     <!-- Place a clip at Clips/daynight.mp4 to replace this placeholder -->
-    <div class="showcase-media">
-      <video controls preload="metadata"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <source src="Clips/daynight.mp4" type="video/mp4">
-      </video>
-      <div class="media-placeholder" style="display:none;">
-        <div class="play-ring">&#9654;</div>
-        Add a clip at Clips/daynight.mp4
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/daynight.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/daynight.mp4
+        </div>
       </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
     </div>
     <div>
       <h3>Phase-Based Day / Night Cycle</h3>
@@ -566,15 +573,18 @@ DayNightData.EASE_BLEND = <span class="n">0.7</span>
   <!-- 02 -->
   <div class="showcase-card reveal">
     <!-- Place a clip at Clips/xp.mp4 to replace this placeholder -->
-    <div class="showcase-media">
-      <video controls preload="metadata"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <source src="Clips/xp.mp4" type="video/mp4">
-      </video>
-      <div class="media-placeholder" style="display:none;">
-        <div class="play-ring">&#9654;</div>
-        Add a clip at Clips/xp.mp4
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/xp.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/xp.mp4
+        </div>
       </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
     </div>
     <div>
       <h3>XP &amp; Levelling System</h3>
@@ -631,15 +641,18 @@ XPData.FishRarity = {
   <!-- 03 -->
   <div class="showcase-card reveal">
     <!-- Place a clip at Clips/loot.mp4 to replace this placeholder -->
-    <div class="showcase-media">
-      <video controls preload="metadata"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <source src="Clips/loot.mp4" type="video/mp4">
-      </video>
-      <div class="media-placeholder" style="display:none;">
-        <div class="play-ring">&#9654;</div>
-        Add a clip at Clips/loot.mp4
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/loot.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/loot.mp4
+        </div>
       </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
     </div>
     <div>
       <h3>Tier-Weighted Loot &amp; Spawning</h3>
@@ -706,15 +719,18 @@ LootData.Prompt = {
   <!-- 04 -->
   <div class="showcase-card reveal">
     <!-- Place a clip at Clips/combat.mp4 to replace this placeholder -->
-    <div class="showcase-media">
-      <video controls preload="metadata"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <source src="Clips/combat.mp4" type="video/mp4">
-      </video>
-      <div class="media-placeholder" style="display:none;">
-        <div class="play-ring">&#9654;</div>
-        Add a clip at Clips/combat.mp4
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/combat.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/combat.mp4
+        </div>
       </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
     </div>
     <div>
       <h3>NPC AI &amp; Melee Combat</h3>
