@@ -3,147 +3,536 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chez, Roblox Systems Scripter</title>
-<meta name="description" content="Chez is a Roblox scripter working in Luau on server systems, data persistence, admin tooling and config-driven gameplay.">
-<meta name="theme-color" content="#0a0b0d">
-
-<!-- Replace the two URLs below with your custom domain once it is pointed at this site. -->
-<link rel="canonical" href="https://chezdev.onrender.com/">
-<meta property="og:title" content="Chez, Roblox Systems Scripter">
-<meta property="og:description" content="Luau scripter working on server systems, data persistence, admin tooling and config-driven gameplay.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://chezdev.onrender.com/">
-
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="alternate icon" href="favicon.svg">
-<link rel="mask-icon" href="favicon.svg" color="#d99a44">
-
+<title>Chez — Roblox Scripting Portfolio</title>
+<meta name="theme-color" content="#080a10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23080a10'/%3E%3Ctext x='12' y='17' font-size='14' text-anchor='middle' fill='%23e8a94c' font-family='monospace'%3EC%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Chez is a Roblox systems scripter focused on maintainable Luau architecture, DataStore persistence, and config-driven gameplay.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #080a10;
+    --panel: #0f131c;
+    --panel-2: #141926;
+    --line: #1f2634;
+    --line-soft: #182031;
+    --text: #e9ebf0;
+    --text-dim: #848ea3;
+    --amber: #e8a94c;
+    --amber-soft: rgba(232,169,76,0.12);
+    --teal: #52d1c4;
+    --teal-soft: rgba(82,209,196,0.10);
+    --green: #52d18a;
+    --violet: #9b8cf0;
+    --radius: 14px;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ambient background */
+  .bg-layer{
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .bg-grid{
+    position: fixed; inset: 0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+  .orb{
+    position: fixed; border-radius: 50%; filter: blur(90px); pointer-events:none; z-index:0;
+    opacity: 0.5;
+  }
+  .orb-a{ width: 520px; height: 520px; top: -160px; left: -120px; background: rgba(232,169,76,0.13); }
+  .orb-b{ width: 460px; height: 460px; top: 12%; right: -140px; background: rgba(82,209,196,0.10); }
+  .orb-c{ width: 520px; height: 520px; bottom: 6%; left: 20%; background: rgba(155,140,240,0.07); }
+
+  a{ color: inherit; text-decoration: none; }
+  ::selection{ background: var(--amber); color: #080a10; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position: sticky; top:0; z-index: 100;
+    background: rgba(8,10,16,0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav-wrap{
+    max-width: 1140px; margin: 0 auto;
+    padding: 15px 32px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .brand{
+    font-family: var(--mono); font-size: 14px; color: var(--text);
+    display: flex; align-items: center; gap: 9px; letter-spacing: -0.01em;
+  }
+  .brand .dot{
+    width:7px; height:7px; border-radius:50%; background: var(--amber);
+    box-shadow: 0 0 10px var(--amber); animation: blink 2.4s infinite;
+  }
+  @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:.3} }
+  nav ul{ list-style:none; display:flex; gap: 6px; }
+  nav a{
+    font-family: var(--mono); font-size: 12.5px; color: var(--text-dim);
+    letter-spacing: 0.01em; transition: color .2s, background .2s;
+    padding: 7px 12px; border-radius: 7px; display:block;
+  }
+  nav a:hover{ color: var(--text); background: rgba(255,255,255,0.04); }
+  nav a.active{ color: var(--amber); background: var(--amber-soft); }
+  .nav-toggle{
+    display:none; background:rgba(255,255,255,0.04); border:1px solid var(--line);
+    color:var(--text); font-size:16px; cursor:pointer; border-radius:8px;
+    width:38px; height:38px; align-items:center; justify-content:center;
+  }
+
+  @media (max-width: 860px){
+    nav ul{
+      position: absolute; top: 100%; left:0; right:0;
+      background: rgba(12,15,23,0.98); border-bottom: 1px solid var(--line);
+      flex-direction: column; padding: 14px 24px 20px; gap: 4px; display: none;
+      backdrop-filter: blur(14px);
+    }
+    nav ul.open{ display:flex; }
+    .nav-toggle{ display:flex; }
+    .nav-wrap{ padding: 13px 22px; }
+  }
+
+  section{ position: relative; z-index:1; max-width: 1140px; margin: 0 auto; padding: 104px 32px; }
+  @media (max-width: 720px){ section{ padding: 72px 22px; } }
+
+  h1,h2,h3{ font-family: var(--display); font-weight: 600; letter-spacing: -0.02em; line-height:1.2; }
+  h2{ font-size: clamp(26px, 3.4vw, 33px); margin-bottom: 10px; }
+
+  .section-head{ margin-bottom: 46px; }
+  .kicker{
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--amber); margin-bottom: 16px;
+    display:flex; align-items:center; gap:11px;
+  }
+  .kicker::after{
+    content:""; height:1px; flex:1; max-width:120px;
+    background: linear-gradient(90deg, rgba(232,169,76,0.45), transparent);
+  }
+  .section-sub{ color: var(--text-dim); font-size: 15.5px; max-width: 600px; }
+
+  /* ---------- HERO ---------- */
+  #home{ padding-top: 86px; padding-bottom: 76px; }
+  .hero-grid{ display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 60px; align-items: center; }
+  @media (max-width: 940px){ .hero-grid{ grid-template-columns: 1fr; gap: 44px; } }
+
+  .status-pill{
+    display:inline-flex; align-items:center; gap:9px;
+    font-family: var(--mono); font-size: 11px; letter-spacing:0.1em;
+    color: #8ce0d4; background: var(--teal-soft);
+    border: 1px solid rgba(82,209,196,0.26);
+    padding: 7px 14px; border-radius: 100px; margin-bottom: 28px;
+  }
+  .status-pill .dot{
+    width:6px;height:6px;border-radius:50%; background:var(--teal);
+    box-shadow: 0 0 8px var(--teal); animation: blink 2.4s infinite;
+  }
+  h1.title{ font-size: clamp(36px, 5.4vw, 56px); line-height: 1.08; margin-bottom: 24px; }
+  h1.title .hl{
+    background: linear-gradient(100deg, var(--amber), #f6d79b);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lede{ color: var(--text-dim); font-size: 16.5px; max-width: 520px; margin-bottom: 34px; }
+  .cta-row{ display:flex; gap: 12px; flex-wrap: wrap; }
+  .btn{
+    font-family: var(--mono); font-size: 12.5px; padding: 13px 22px; border-radius: 9px;
+    border: 1px solid var(--line); transition: all .2s;
+    display:inline-flex; align-items:center; gap:9px; background: rgba(255,255,255,0.02);
+  }
+  .btn-primary{
+    background: linear-gradient(100deg, var(--amber), #f0bd6b);
+    color: #0a0d13; border-color: transparent; font-weight: 600;
+    box-shadow: 0 6px 24px -8px rgba(232,169,76,0.5);
+  }
+  .btn-primary:hover{ transform: translateY(-1px); box-shadow: 0 10px 28px -8px rgba(232,169,76,0.6); }
+  .btn-ghost:hover{ border-color: rgba(232,169,76,0.5); color: var(--amber); transform: translateY(-1px); }
+
+  .hero-stats{
+    display:flex; gap: 30px; margin-top: 40px; padding-top: 30px;
+    border-top: 1px solid var(--line-soft); flex-wrap: wrap;
+  }
+  .hero-stat .n{ font-family: var(--display); font-size: 22px; font-weight:600; color: var(--text); }
+  .hero-stat .l{ font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing:0.05em; }
+
+  /* code panel */
+  .code-panel{
+    background: linear-gradient(180deg, var(--panel), #0c1017);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; box-shadow: 0 40px 80px -30px rgba(0,0,0,0.8);
+  }
+  .code-tabbar{
+    display:flex; align-items:center; gap: 10px;
+    padding: 11px 15px; background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .code-tabbar .tab{
+    font-family: var(--mono); font-size: 11.5px; color: var(--amber);
+    padding: 4px 11px; border-radius: 6px; background: var(--amber-soft);
+  }
+  .code-dots{ display:flex; gap:6px; margin-right: 4px; }
+  .code-dots span{ width:9px; height:9px; border-radius:50%; background: var(--line); }
+  .code-dots span:first-child{ background:#3a2b2b; }
+  pre.code{
+    font-family: var(--mono); font-size: 12.2px; padding: 20px 18px; overflow-x:auto;
+    color: #c3cbdb; line-height:1.7;
+  }
+  pre.code .k{ color: #e8a94c; }
+  pre.code .s{ color: #7bdcc4; }
+  pre.code .c{ color: #55607a; font-style: italic; }
+  pre.code .n{ color: #cf9bf0; }
+  pre.code .f{ color: #7fb4ff; }
+
+  /* ---------- EMPTY STATE (live games) ---------- */
+  .empty-state{
+    border: 1px dashed var(--line); border-radius: var(--radius);
+    background: rgba(255,255,255,0.012);
+    padding: 54px 30px; text-align: center;
+  }
+  .empty-state .icon{
+    width: 48px; height: 48px; margin: 0 auto 18px; border-radius: 12px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; color: var(--text-dim);
+  }
+  .empty-state .title{ font-family: var(--display); font-size: 17px; margin-bottom: 7px; }
+  .empty-state .sub{ color: var(--text-dim); font-size: 14px; max-width: 400px; margin: 0 auto; }
+
+  /* ---------- SHOWCASES ---------- */
+  .showcase-card{
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 28px; margin-bottom: 22px;
+    display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 30px; align-items: start;
+    transition: border-color .25s, transform .25s;
+  }
+  .showcase-card:hover{ border-color: #2c374d; }
+  @media (max-width: 900px){ .showcase-card{ grid-template-columns: 1fr; padding: 22px; } }
+
+  .showcase-media{
+    position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px;
+    background: var(--panel-2); border: 1px dashed var(--line);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .showcase-media video{ width:100%; height:100%; object-fit: cover; display:block; }
+  .showcase-media .media-placeholder{
+    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); text-align:center; padding: 0 20px;
+  }
+  .showcase-media .play-ring{
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; margin: 0 auto 11px;
+    color: var(--amber); font-size: 13px; background: rgba(232,169,76,0.06);
+  }
+  .showcase-card h3{ font-size: 18.5px; margin-bottom: 11px; }
+  .media-credit{
+    font-family: var(--mono); font-size: 10.5px; color: var(--text-dim);
+    opacity: 0.6; margin-top: 8px; letter-spacing: 0.02em;
+  }
+  .showcase-tags{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom: 14px; }
+  .tag{
+    font-family: var(--mono); font-size: 10.5px; color: var(--teal);
+    background: var(--teal-soft); border: 1px solid rgba(82,209,196,0.22);
+    padding: 4px 10px; border-radius: 100px; letter-spacing: 0.02em;
+  }
+  .showcase-desc{ color: var(--text-dim); font-size: 14px; margin-bottom: 18px; }
+  .showcase-desc code{
+    font-family: var(--mono); font-size: 12.5px; color: var(--amber);
+    background: var(--amber-soft); border: 1px solid rgba(232,169,76,0.18);
+    padding: 1px 6px; border-radius: 5px;
+  }
+
+  .mini-code-panel{
+    background: #0a0e15; border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  }
+  .mini-code-tabbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 9px 13px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--line-soft);
+    font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+  }
+  .code-toggle{
+    background:none; border: none; color: var(--teal); font-family: var(--mono);
+    font-size: 10.5px; cursor: pointer; display:flex; align-items:center; gap:5px;
+    padding: 3px 7px; border-radius: 5px; transition: background .2s;
+  }
+  .code-toggle:hover{ background: var(--teal-soft); }
+  .mini-code-body{
+    max-height: 148px; overflow: hidden; position: relative;
+    transition: max-height .4s ease;
+  }
+  .mini-code-body::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:46px;
+    background: linear-gradient(to bottom, transparent, #0a0e15);
+    transition: opacity .25s; pointer-events:none;
+  }
+  .mini-code-body.expanded{ max-height: 1100px; overflow-y: auto; }
+  .mini-code-body.expanded::after{ opacity: 0; }
+  .mini-code-body pre.code{ padding: 15px; font-size: 11.6px; }
+
+  /* ---------- SYSTEMS GRID ---------- */
+  .systems-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+  .system-card{
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px 24px; transition: border-color .25s, transform .25s;
+  }
+  .system-card:hover{ border-color: #2c374d; transform: translateY(-2px); }
+  .system-card .icon{
+    width: 38px; height: 38px; border-radius: 10px; margin-bottom: 16px;
+    background: var(--amber-soft); border: 1px solid rgba(232,169,76,0.22);
+    display:flex; align-items:center; justify-content:center; color: var(--amber);
+  }
+  .system-card h3{ font-size: 15.5px; margin-bottom: 9px; }
+  .system-card p{ color: var(--text-dim); font-size: 13.5px; }
+  .system-card .project-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top: 15px; }
+
+  /* ---------- TECH STACK ---------- */
+  .stack-groups{ display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 26px; }
+  .stack-group h3{
+    font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 15px;
+  }
+  .stack-chips{ display:flex; flex-direction:column; gap:9px; }
+  .tech-item{
+    background: rgba(255,255,255,0.018); border: 1px solid var(--line); border-radius: 10px;
+    padding: 11px 14px; display:flex; align-items:center; gap:12px;
+    transition: border-color .2s, background .2s;
+  }
+  .tech-item:hover{ border-color: #2c374d; background: rgba(255,255,255,0.032); }
+  .tech-item .t-icon{
+    width: 34px; height:34px; border-radius:9px; background: var(--panel-2);
+    display:flex; align-items:center; justify-content:center; color: var(--amber); flex-shrink:0;
+  }
+  .tech-item .t-icon svg{ width:18px; height:18px; }
+  .tech-item .t-icon img{ width:18px; height:18px; object-fit:contain; }
+  .tech-item .t-name{ font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+  .t-icon.brand{ background: transparent; border: none; width: 44px; height: 44px; }
+  .t-icon.brand svg{ width: 28px; height: 28px; }
+  .t-icon.brand img{ width: 28px; height: 28px; }
+  .t-icon.brand-robux{ background: transparent; width: 44px; height: 44px; }
+  .t-icon.brand-robux svg{ width: 28px; height: 28px; }
+  .t-icon.brand-robux img{ width: 28px; height: 28px; }
+
+  /* ---------- CONTACT ---------- */
+  .contact-meta-line{
+    font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-top: 18px;
+    display:flex; gap: 18px; flex-wrap: wrap;
+  }
+  .contact-meta-line span{ color: var(--amber); }
+  .contact-panel{
+    background: linear-gradient(150deg, var(--panel), #0b0f16);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 40px; display:grid; grid-template-columns: 1.15fr 1fr; gap: 36px;
+    margin-top: 42px;
+  }
+  @media (max-width: 820px){ .contact-panel{ grid-template-columns: 1fr; padding: 28px; } }
+  .contact-panel h3{ font-size: 19px; margin-bottom: 9px; }
+  .contact-panel .p-sub{ color:var(--text-dim); font-size:14px; }
+  .status-badge{
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em;
+    color: var(--green); background: rgba(82,209,138,0.09); border: 1px solid rgba(82,209,138,0.28);
+    padding: 3px 9px; border-radius: 100px; text-transform: uppercase;
+    display:inline-flex; align-items:center; gap:5px; white-space: nowrap;
+  }
+  .status-badge::before{ content:""; width:5px; height:5px; border-radius:50%; background: var(--green); }
+  .discord-btn{
+    display:flex; align-items:center; justify-content:space-between; gap: 12px;
+    background: rgba(88,101,242,0.06); border: 1px solid rgba(88,101,242,0.3); border-radius: 11px;
+    padding: 15px 18px; margin-top: 20px; transition: all .2s;
+  }
+  .discord-btn:hover{ border-color: rgba(88,101,242,0.65); background: rgba(88,101,242,0.12); transform: translateY(-1px); }
+  .discord-btn .d-left{ display:flex; align-items:center; gap:13px; }
+  .discord-btn .d-icon{
+    width: 38px; height:38px; border-radius:10px; background: #5865F2;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .discord-btn .d-text .label{ font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing:0.08em; }
+  .discord-btn .d-text .handle{ font-family: var(--mono); font-size: 14px; color: var(--text); }
+  .meta-list{ display:flex; flex-direction:column; gap: 12px; }
+  .meta-card{
+    background: rgba(255,255,255,0.018); border: 1px solid var(--line); border-radius: 11px;
+    padding: 14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .meta-card .m-left{ display:flex; align-items:center; gap: 12px; }
+  .meta-card .m-icon{
+    width: 42px; height:42px; border-radius:10px; background: var(--panel-2);
+    display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;
+    color: var(--amber);
+  }
+  .meta-card .m-icon.coin{ background: transparent; }
+  .meta-card .m-icon img{ width:26px; height:26px; object-fit:contain; }
+  .meta-card .m-label{ font-family: var(--mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+  .meta-card .m-value{ font-family: var(--mono); font-size: 12.5px; color: var(--text); margin-top: 2px; }
+
+  footer{
+    position: relative; z-index:1;
+    text-align:center; padding: 38px 32px; color: var(--text-dim);
+    font-family: var(--mono); font-size: 11.5px; border-top: 1px solid var(--line-soft);
+  }
+
+  .reveal{ opacity:0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+    .reveal{ opacity:1; transform:none; }
+  }
+</style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="wrap header-inner">
-    <a class="wordmark" href="/" aria-label="Chez, home">
-      <svg class="mark" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
-        <rect x="1" y="1" width="30" height="30" rx="3" fill="none" stroke="#23272f"/>
-        <path d="M14.5 9.5 C11.8 9.5 12.6 15 9.8 16 C12.6 17 11.8 22.5 14.5 22.5" fill="none" stroke="#d99a44" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M18.6 9.8 H22.4 V22.2 H18.6" fill="none" stroke="#e7e8ea" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      chez.dev
-    </a>
+<div class="bg-grid"></div>
+<div class="orb orb-a"></div>
+<div class="orb orb-b"></div>
+<div class="orb orb-c"></div>
 
-    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navList" aria-label="Open menu">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-        <path d="M4 7h16M4 12h16M4 17h16"/>
-      </svg>
-    </button>
-
-    <nav aria-label="Primary">
-      <ul class="nav-list" id="navList">
-        <li><a href="#work">Work</a></li>
-        <li><a href="#games">Live games</a></li>
-        <li><a href="#capabilities">Capabilities</a></li>
-        <li><a href="#tools">Tools</a></li>
+<header>
+  <div class="nav-wrap">
+    <div class="brand"><span class="dot"></span> chez.dev</div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    <nav>
+      <ul id="navList">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#projects">Live Games</a></li>
+        <li><a href="#showcases">Showcases</a></li>
+        <li><a href="#systems">Systems</a></li>
+        <li><a href="#tech-stack">Tech Stack</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
   </div>
 </header>
 
-<main>
-
-<!-- ============ HERO ============ -->
-<div class="wrap">
-  <section class="hero" id="top">
-    <div class="hero-top">
-      <div>
-        <span class="availability"><span class="led" aria-hidden="true"></span> Open to work</span>
-        <h1 class="hero-title">Roblox systems <span class="accent">scripter</span></h1>
-        <p class="lede">
-          I write Luau. Most of my work is the part players never notice: data that survives a
-          rejoin, permissions that actually hold, and gameplay numbers kept in config instead of
-          buried in the logic.
-        </p>
-        <div class="actions">
-          <a class="btn btn-solid" href="#work">See the work</a>
-          <a class="btn" href="#contact">Get in touch</a>
+<section id="home">
+  <div class="hero-grid">
+    <div>
+      <span class="status-pill"><span class="dot"></span> AVAILABLE FOR WORK</span>
+      <h1 class="title">Roblox Systems <span class="hl">Scripter</span></h1>
+      <p class="lede">My focus is Luau systems that stay solid after release: organized ModuleScript structure, reliable DataStore persistence, and tunable config so gameplay can be balanced without touching core logic.</p>
+      <div class="cta-row">
+        <a href="#showcases" class="btn btn-primary">View Showcases</a>
+        <a href="#systems" class="btn btn-ghost">View Systems</a>
+        <a href="#contact" class="btn btn-ghost">Get in touch</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="n">Luau</div>
+          <div class="l">PRIMARY LANGUAGE</div>
+        </div>
+        <div class="hero-stat">
+          <div class="n">Server-first</div>
+          <div class="l">AUTHORITY MODEL</div>
+        </div>
+        <div class="hero-stat">
+          <div class="n">GMT+1</div>
+          <div class="l">TIMEZONE</div>
         </div>
       </div>
-
-      <div class="facts">
-        <dl>
-          <div class="row"><dt>Role</dt><dd>Systems scripter</dd></div>
-          <div class="row"><dt>Language</dt><dd>Luau</dd></div>
-          <div class="row"><dt>Works in</dt><dd>Roblox Studio</dd></div>
-          <div class="row"><dt>Timezone</dt><dd>GMT+1</dd></div>
-          <div class="row"><dt>Payment</dt><dd>Robux</dd></div>
-          <div class="row"><dt>Rates</dt><dd>Fixed per task</dd></div>
-        </dl>
+    </div>
+    <div class="code-panel reveal">
+      <div class="code-tabbar">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="tab">DevProfile.lua</div>
       </div>
+      <pre class="code"><span class="c">-- exposed config, not a personality test</span>
+<span class="k">local</span> DevProfile = {}
+
+DevProfile.Name = <span class="s">"Chez"</span>
+DevProfile.Role = <span class="s">"Systems Scripter"</span>
+
+DevProfile.Focus = {
+  Architecture = <span class="s">"ModuleScript services"</span>,
+  Persistence  = <span class="s">"ProfileStore + DataStore"</span>,
+  Comms        = <span class="s">"RemoteEvents / Functions"</span>,
+  Tuning       = <span class="s">"shared config modules"</span>,
+}
+
+DevProfile.Delivery = {
+  Handoff       = <span class="s">"readable code, commented config"</span>,
+  Testing       = <span class="s">"verified in a live session"</span>,
+  Updates       = <span class="s">"daily, while the work is running"</span>,
+  AfterDelivery = <span class="s">"I fix bugs in what I shipped"</span>,
+}
+
+DevProfile.Status = <span class="s">"Open to work"</span>
+
+<span class="k">return</span> <span class="n">table.freeze</span>(DevProfile)</pre>
     </div>
-  </section>
-</div>
+  </div>
+</section>
 
-<!-- ============ WORK ============ -->
-<div class="wrap">
-  <section id="work">
-    <div class="sec-head">
-      <p class="sec-label"><span class="num">01</span> Selected systems</p>
-      <h2>Systems I have built</h2>
-      <p class="sec-intro">
-        Four systems, each shown with the config module that drives it. All of them were built so
-        behaviour can be retuned by editing values rather than rewriting logic.
-      </p>
+<section id="projects">
+  <div class="section-head">
+    <div class="kicker">Live Games</div>
+    <h2>Published experiences</h2>
+    <p class="section-sub">Shipped Roblox games I've scripted on.</p>
+  </div>
+
+  <div class="empty-state reveal">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+        <path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z"/>
+        <path d="M4 7.5 L12 12 L20 7.5"/><path d="M12 12 L12 21"/>
+      </svg>
     </div>
+    <div class="title">No live games yet...</div>
+    <div class="sub">Nothing published under my name at the moment. The systems work below is what I've actually been building — check the showcases.</div>
+  </div>
+</section>
 
-    <div class="work">
+<section id="showcases">
+  <div class="section-head">
+    <div class="kicker">System Showcases</div>
+    <h2>Systems I've built</h2>
+    <p class="section-sub">Reusable gameplay systems I've built and shipped, each designed around exposed config so behavior can be tuned without rewriting the logic underneath.</p>
+  </div>
 
-      <!-- 01 -->
-      <article class="work-item">
-        <div>
-          <div class="frame">
-            <video controls preload="metadata"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-              <source src="Clips/daynight.mp4" type="video/mp4">
-            </video>
-            <div class="fallback" style="display:none;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/>
-              </svg>
-              Clips/daynight.mp4
-            </div>
-          </div>
-          <p class="credit">Video taken in Gardener's Legacy</p>
+  <!-- 01 -->
+  <div class="showcase-card reveal">
+    <!-- Place a clip at Clips/daynight.mp4 to replace this placeholder -->
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/daynight.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/daynight.mp4
         </div>
-        <div>
-          <p class="idx">01</p>
-          <h3>Phase based day and night cycle</h3>
-          <div class="chips">
-            <span class="chip">Lighting</span>
-            <span class="chip">Client prediction</span>
-            <span class="chip">Config driven</span>
-          </div>
-          <p>
-            Roblox quantises <code>ClockTime</code>, so a slow continuous cycle visibly steps no
-            matter how often you write to it. This one holds the sun still through day and night and
-            only animates the transitions, fast enough that they stay smooth. The server publishes a
-            single time anchor and each client derives the hour locally, so there is one writer and
-            no replication jitter.
-          </p>
-          <div class="code-block">
-            <div class="code-bar">
-              <span>DayNightData.lua</span>
-              <button class="code-toggle" aria-expanded="false" onclick="toggleCode(this)">
-                <span class="label">Show full code</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-            </div>
-            <div class="code-body">
-<pre class="code"><span class="k">local</span> DayNightData = {}
+      </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
+    </div>
+    <div>
+      <h3>Phase-Based Day / Night Cycle</h3>
+      <div class="showcase-tags">
+        <span class="tag">Lighting</span>
+        <span class="tag">Client Prediction</span>
+        <span class="tag">Config-Driven</span>
+      </div>
+      <p class="showcase-desc">Roblox quantises <code>ClockTime</code>, so a slow continuous cycle visibly steps no matter how often you write it. This holds the sun still through day and night and only animates the transitions — fast enough to stay smooth. The server publishes a single time anchor; each client derives the hour locally, so there's one writer and no replication jitter.</p>
+      <div class="mini-code-panel">
+        <div class="mini-code-tabbar">
+          <span>DayNightData.lua</span>
+          <button class="code-toggle" onclick="toggleCode(this)">&#9662; Show full code</button>
+        </div>
+        <div class="mini-code-body">
+          <pre class="code"><span class="k">local</span> DayNightData = {}
 
 DayNightData.DAY_HOUR   = <span class="n">13</span>
 DayNightData.NIGHT_HOUR = <span class="n">23</span>
@@ -152,7 +541,7 @@ DayNightData.NIGHT_HOLD = <span class="n">150</span>
 DayNightData.TRANSITION = <span class="n">20</span>   <span class="c">-- dusk / dawn length</span>
 DayNightData.EASE_BLEND = <span class="n">0.7</span>
 
-<span class="c">-- sun and moon sit 12h apart on one track, so these two</span>
+<span class="c">-- sun and moon sit 12h apart on one track, so the hours</span>
 <span class="c">-- must NOT be 12 apart or the moon parks where the sun was</span>
 <span class="k">function</span> DayNightData.<span class="f">ArcHours</span>()
 	<span class="k">return</span> (DayNightData.NIGHT_HOUR - DayNightData.DAY_HOUR) % <span class="n">24</span>
@@ -162,67 +551,56 @@ DayNightData.EASE_BLEND = <span class="n">0.7</span>
 	<span class="k">return</span> t * t * (<span class="n">3</span> - <span class="n">2</span> * t)
 <span class="k">end</span>
 
-<span class="c">-- a full ease starts and ends at zero speed, which is</span>
-<span class="c">-- exactly what stutters. blend a linear floor underneath.</span>
+<span class="c">-- a full ease starts and ends at zero speed, which is exactly</span>
+<span class="c">-- what stutters. blend a linear floor underneath it.</span>
 <span class="k">function</span> DayNightData.<span class="f">Ease</span>(t)
 	<span class="k">return</span> t * (<span class="n">1</span> - DayNightData.EASE_BLEND)
 		+ <span class="f">smoothstep</span>(t) * DayNightData.EASE_BLEND
 <span class="k">end</span>
 
 <span class="c">-- shared, so server and client run identical maths</span>
-<span class="c">-- from the one replicated anchor</span>
+<span class="c">-- off the one replicated anchor</span>
 <span class="k">function</span> DayNightData.<span class="f">HourAt</span>(elapsed)
 	<span class="c">-- returns hour, phase ("Day"/"Dusk"/"Night"/"Dawn")</span>
 <span class="k">end</span>
 
 <span class="k">return</span> <span class="n">table.freeze</span>(DayNightData)</pre>
-            </div>
-          </div>
         </div>
-      </article>
+      </div>
+    </div>
+  </div>
 
-      <!-- 02 -->
-      <article class="work-item">
-        <div>
-          <div class="frame">
-            <video controls preload="metadata"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-              <source src="Clips/xp.mp4" type="video/mp4">
-            </video>
-            <div class="fallback" style="display:none;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/>
-              </svg>
-              Clips/xp.mp4
-            </div>
-          </div>
-          <p class="credit">Video taken in Gardener's Legacy</p>
+  <!-- 02 -->
+  <div class="showcase-card reveal">
+    <!-- Place a clip at Clips/xp.mp4 to replace this placeholder -->
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/xp.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/xp.mp4
         </div>
-        <div>
-          <p class="idx">02</p>
-          <h3>XP and levelling</h3>
-          <div class="chips">
-            <span class="chip">Progression</span>
-            <span class="chip">HUD</span>
-            <span class="chip">Balancing</span>
-          </div>
-          <p>
-            XP comes from several different activities, and each payout is scaled by what the player
-            actually did rather than a flat number per action. Awards hook in only where the action
-            genuinely succeeded, so something the game refuses pays nothing. The curve sits in one
-            shared module that the HUD bar reads from as well, which leaves a single place it can be
-            wrong and makes rebalancing a number change.
-          </p>
-          <div class="code-block">
-            <div class="code-bar">
-              <span>XPData.lua</span>
-              <button class="code-toggle" aria-expanded="false" onclick="toggleCode(this)">
-                <span class="label">Show full code</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-            </div>
-            <div class="code-body">
-<pre class="code"><span class="k">local</span> XPData = {}
+      </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
+    </div>
+    <div>
+      <h3>XP &amp; Levelling System</h3>
+      <div class="showcase-tags">
+        <span class="tag">Progression</span>
+        <span class="tag">HUD</span>
+        <span class="tag">Balancing</span>
+      </div>
+      <p class="showcase-desc">A progression system that pulls XP from several different activities, each payout scaled by what the player actually did rather than a flat number per action. Awards hook in only on genuine success, so an action the game refuses pays nothing. The curve lives in one shared module that the HUD bar reads from too, so there's a single place it can ever be wrong — and rebalancing is a number change, not a rewrite.</p>
+      <div class="mini-code-panel">
+        <div class="mini-code-tabbar">
+          <span>XPData.lua</span>
+          <button class="code-toggle" onclick="toggleCode(this)">&#9662; Show full code</button>
+        </div>
+        <div class="mini-code-body">
+          <pre class="code"><span class="k">local</span> XPData = {}
 
 XPData.MAX_LEVEL = <span class="n">500</span>
 
@@ -231,77 +609,66 @@ XPData.MAX_LEVEL = <span class="n">500</span>
 	<span class="k">return</span> <span class="n">math.floor</span>(<span class="n">100</span> + <span class="n">25</span> * level ^ <span class="n">1.6</span>)
 <span class="k">end</span>
 
-<span class="c">-- sqrt so a 40kg item beats a 2kg one without being 20x</span>
-<span class="k">function</span> XPData.<span class="f">Harvest</span>(weight, modifiers)
+<span class="c">-- sqrt so a 40kg fruit beats a 2kg one without being 20x</span>
+<span class="k">function</span> XPData.<span class="f">Harvest</span>(weight, mutations)
 	<span class="k">local</span> base = <span class="n">8</span> + <span class="n">4</span> * <span class="n">math.sqrt</span>(weight)
-	<span class="k">return</span> <span class="n">math.floor</span>(base * (<span class="n">1</span> + modifiers * <span class="n">0.5</span>))
+	<span class="k">return</span> <span class="n">math.floor</span>(base * (<span class="n">1</span> + mutations * <span class="n">0.5</span>))
 <span class="k">end</span>
 
-XPData.Rarity = {
+XPData.FishRarity = {
 	common = <span class="n">1</span>,      uncommon = <span class="n">1.4</span>, rare   = <span class="n">2</span>,
 	legendary = <span class="n">3</span>,   mythical = <span class="n">4.5</span>, exotic = <span class="n">6</span>,
 	radiant = <span class="n">8</span>,
 }
 
-<span class="k">function</span> XPData.<span class="f">Catch</span>(weight, rarity)
-	<span class="k">local</span> mult = XPData.Rarity[rarity] <span class="k">or</span> <span class="n">1</span>
+<span class="k">function</span> XPData.<span class="f">Fish</span>(weight, rarity)
+	<span class="k">local</span> mult = XPData.FishRarity[rarity] <span class="k">or</span> <span class="n">1</span>
 	<span class="k">return</span> <span class="n">math.floor</span>((<span class="n">12</span> + <span class="n">3</span> * <span class="n">math.sqrt</span>(weight)) * mult)
 <span class="k">end</span>
 
-<span class="c">-- deliberately the thinnest source: selling already pays</span>
-<span class="c">-- out, it should not also be the fastest way to level</span>
+<span class="c">-- deliberately the thinnest source: selling already</span>
+<span class="c">-- pays out, it shouldn't also be the fastest way to level</span>
 <span class="k">function</span> XPData.<span class="f">Sale</span>(payout)
 	<span class="k">return</span> <span class="n">math.clamp</span>(<span class="n">math.floor</span>(payout * <span class="n">0.02</span>), <span class="n">1</span>, <span class="n">400</span>)
 <span class="k">end</span>
 
 <span class="k">return</span> <span class="n">table.freeze</span>(XPData)</pre>
-            </div>
-          </div>
         </div>
-      </article>
+      </div>
+    </div>
+  </div>
 
-      <!-- 03 -->
-      <article class="work-item">
-        <div>
-          <div class="frame">
-            <video controls preload="metadata"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-              <source src="Clips/loot.mp4" type="video/mp4">
-            </video>
-            <div class="fallback" style="display:none;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/>
-              </svg>
-              Clips/loot.mp4
-            </div>
-          </div>
-          <p class="credit">Video taken in Gardener's Legacy</p>
+  <!-- 03 -->
+  <div class="showcase-card reveal">
+    <!-- Place a clip at Clips/loot.mp4 to replace this placeholder -->
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/loot.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/loot.mp4
         </div>
-        <div>
-          <p class="idx">03</p>
-          <h3>Tier weighted loot and spawning</h3>
-          <div class="chips">
-            <span class="chip">Loot tables</span>
-            <span class="chip">Spawning</span>
-            <span class="chip">Economy</span>
-          </div>
-          <p>
-            Containers and collectibles spawn inside a marker volume using rejection sampling, so
-            they only ever land on valid ground. Move or resize that marker in Studio and nothing in
-            code changes. Rarity rolls by tier first and then uniformly inside it, which stops the
-            largest tier quietly dominating the odds. The item pool is derived from data the game
-            already owns rather than restated, so a newly added item cannot silently fail to drop.
-          </p>
-          <div class="code-block">
-            <div class="code-bar">
-              <span>LootData.lua</span>
-              <button class="code-toggle" aria-expanded="false" onclick="toggleCode(this)">
-                <span class="label">Show full code</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-            </div>
-            <div class="code-body">
-<pre class="code"><span class="k">local</span> LootData = {}
+      </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
+    </div>
+    <div>
+      <h3>Tier-Weighted Loot &amp; Spawning</h3>
+      <div class="showcase-tags">
+        <span class="tag">Loot Tables</span>
+        <span class="tag">Spawning</span>
+        <span class="tag">Economy</span>
+      </div>
+      <p class="showcase-desc">Collectibles and containers spawn inside a marker volume using rejection sampling, so they only ever land on valid ground — move or resize the marker in Studio and nothing in code changes. Rarity is rolled by tier first, then uniformly inside it, so the largest tier can't quietly dominate the odds. The item pool is derived from data the game already owns rather than restated, which means a newly added item can't silently fail to drop.</p>
+      <div class="mini-code-panel">
+        <div class="mini-code-tabbar">
+          <span>LootData.lua</span>
+          <button class="code-toggle" onclick="toggleCode(this)">&#9662; Show full code</button>
+        </div>
+        <div class="mini-code-body">
+          <pre class="code"><span class="k">local</span> LootData = {}
 
 LootData.Tiers = {
 	<span class="s">"Common"</span>, <span class="s">"Uncommon"</span>, <span class="s">"Rare"</span>, <span class="s">"Epic"</span>,
@@ -309,8 +676,8 @@ LootData.Tiers = {
 }
 
 <span class="c">-- roll the TIER first, then uniformly inside it, so the</span>
-<span class="c">-- tier holding the most items cannot dominate the odds</span>
-LootData.Containers = {
+<span class="c">-- tier holding the most items can't dominate the odds</span>
+LootData.Chests = {
 	Bronze = {
 		MaxAlive = <span class="n">6</span>, Respawn = <span class="n">45</span>, Rewards = <span class="n">1</span>,
 		TierWeights = {
@@ -344,58 +711,46 @@ LootData.Prompt = {
 }
 
 <span class="k">return</span> <span class="n">table.freeze</span>(LootData)</pre>
-            </div>
-          </div>
         </div>
-      </article>
+      </div>
+    </div>
+  </div>
 
-      <!-- 04 -->
-      <article class="work-item">
-        <div>
-          <div class="frame">
-            <video controls preload="metadata"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-              <source src="Clips/combat.mp4" type="video/mp4">
-            </video>
-            <div class="fallback" style="display:none;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                <rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/>
-              </svg>
-              Clips/combat.mp4
-            </div>
-          </div>
-          <p class="credit">Video taken in Gardener's Legacy</p>
+  <!-- 04 -->
+  <div class="showcase-card reveal">
+    <!-- Place a clip at Clips/combat.mp4 to replace this placeholder -->
+    <div class="showcase-media-col">
+      <div class="showcase-media">
+        <video controls preload="metadata"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <source src="Clips/combat.mp4" type="video/mp4">
+        </video>
+        <div class="media-placeholder" style="display:none;">
+          <div class="play-ring">&#9654;</div>
+          Add a clip at Clips/combat.mp4
         </div>
-        <div>
-          <p class="idx">04</p>
-          <h3>NPC behaviour and melee combat</h3>
-          <div class="chips">
-            <span class="chip">AI</span>
-            <span class="chip">Server authoritative</span>
-            <span class="chip">Performance</span>
-          </div>
-          <p>
-            NPCs wander, aggro, chase and attack without PathfindingService. One throttled loop steps
-            every NPC instead of a thread each, which is what keeps it cheap as the count grows. The
-            melee hitbox queries the NPC collection only, so it is structurally unable to hit a
-            player rather than relying on a check that could be written wrong. The attack remote
-            carries no arguments at all: the server reads the attacker's own position and revalidates
-            range and cooldown itself.
-          </p>
-          <div class="code-block">
-            <div class="code-bar">
-              <span>CombatData.lua</span>
-              <button class="code-toggle" aria-expanded="false" onclick="toggleCode(this)">
-                <span class="label">Show full code</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-            </div>
-            <div class="code-body">
-<pre class="code"><span class="k">local</span> CombatData = {}
+      </div>
+      <div class="media-credit">Video taken in Gardener's Legacy</div>
+    </div>
+    <div>
+      <h3>NPC AI &amp; Melee Combat</h3>
+      <div class="showcase-tags">
+        <span class="tag">AI</span>
+        <span class="tag">Server-Authoritative</span>
+        <span class="tag">Performance</span>
+      </div>
+      <p class="showcase-desc">NPCs that wander, aggro, chase and attack without PathfindingService — one throttled loop steps every NPC instead of a thread each, which is what keeps it cheap at scale. The melee hitbox queries the NPC collection only, so it is structurally unable to hit a player rather than relying on a check that could be wrong. The attack remote carries no arguments at all: the server reads the attacker's own position and re-validates range and cooldown itself.</p>
+      <div class="mini-code-panel">
+        <div class="mini-code-tabbar">
+          <span>CombatData.lua</span>
+          <button class="code-toggle" onclick="toggleCode(this)">&#9662; Show full code</button>
+        </div>
+        <div class="mini-code-body">
+          <pre class="code"><span class="k">local</span> CombatData = {}
 
-<span class="c">-- shared so the client can predict feel, but every value is</span>
-<span class="c">-- re-read SERVER side when used, so a tampered copy does nothing</span>
-CombatData.Melee = {
+<span class="c">-- shared for feel, but every value is re-read SERVER-side</span>
+<span class="c">-- when used, so a tampered client copy changes nothing</span>
+CombatData.Knife = {
 	Damage         = <span class="n">25</span>,
 	Cooldown       = <span class="n">0.55</span>,
 	HitboxRadius   = <span class="n">6</span>,
@@ -404,7 +759,7 @@ CombatData.Melee = {
 	MaxHitDistance = <span class="n">14</span>,
 }
 
-CombatData.NPCs = {
+CombatData.Mobs = {
 	Grunt = {
 		Health       = <span class="n">100</span>,
 		WalkSpeed    = <span class="n">6</span>,
@@ -413,322 +768,369 @@ CombatData.NPCs = {
 		AttackRange  = <span class="n">7</span>,
 		AggroRange   = <span class="n">45</span>,
 		<span class="c">-- deliberately LARGER than AggroRange; one shared</span>
-		<span class="c">-- value makes an NPC on the boundary flip every tick</span>
+		<span class="c">-- value makes a mob on the boundary flip every tick</span>
 		DeaggroRange = <span class="n">60</span>,
 		LeashDrop    = <span class="n">25</span>,
 		RespawnDelay = <span class="n">20</span>,
 	},
 }
 
-<span class="c">-- one throttled loop steps every NPC, not a thread each</span>
+<span class="c">-- one throttled loop steps every mob, not a thread each</span>
 CombatData.TickRate = <span class="n">0.15</span>
 
 <span class="k">return</span> <span class="n">table.freeze</span>(CombatData)</pre>
-            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section id="systems">
+  <div class="section-head">
+    <div class="kicker">Backend / Architecture</div>
+    <h2>What I own end to end</h2>
+    <p class="section-sub">The parts of a project I'm confident taking from first setup all the way to delivery.</p>
+  </div>
+
+  <div class="systems-grid">
+    <div class="system-card reveal">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="19" height="19">
+          <path d="M12 3 L20 6.5 V12 c0 4.4-3.4 7.6-8 9-4.6-1.4-8-4.6-8-9V6.5 Z"/>
+          <path d="M9.5 12.2 L11.3 14 L15 10.2"/>
+        </svg>
+      </div>
+      <h3>Admin &amp; Moderation Tooling</h3>
+      <p>Console commands with rank-based permissions resolved from group role, argument autocomplete that can't suggest what the command will refuse, and DataStore-backed ban records kept as an audit log that never gates anything on its own.</p>
+      <div class="project-tags">
+        <span class="tag">Permissions</span>
+        <span class="tag">Cmdr</span>
+        <span class="tag">Audit Trail</span>
+      </div>
+    </div>
+
+    <div class="system-card reveal">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="19" height="19">
+          <ellipse cx="12" cy="6" rx="8" ry="3"/>
+          <path d="M4 6 v12 c0 1.6 3.6 3 8 3 s8-1.4 8-3 V6"/>
+          <path d="M4 12 c0 1.6 3.6 3 8 3 s8-1.4 8-3"/>
+        </svg>
+      </div>
+      <h3>Data &amp; Persistence</h3>
+      <p>Profile-based saving with safe load and release ordering, plus per-feature stores where a profile's session lock would get in the way. Inventory layout, settings and unlocked titles all survive a rejoin, with validation server-side so a client can only rearrange its own things.</p>
+      <div class="project-tags">
+        <span class="tag">ProfileStore</span>
+        <span class="tag">DataStore</span>
+        <span class="tag">Migrations</span>
+      </div>
+    </div>
+
+    <div class="system-card reveal">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="19" height="19">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2.5 v3 M12 18.5 v3 M2.5 12 h3 M18.5 12 h3"/>
+          <path d="M5.5 5.5 l2 2 M16.5 16.5 l2 2 M18.5 5.5 l-2 2 M7.5 16.5 l-2 2"/>
+        </svg>
+      </div>
+      <h3>Config-Driven Gameplay</h3>
+      <p>Gameplay systems built with exposed, editable values, so cooldowns, visuals, movement feel, progression and combat feedback can be adjusted fast during iteration — and a designer can rebalance without opening the logic.</p>
+      <div class="project-tags">
+        <span class="tag">Configurable</span>
+        <span class="tag">Iteration</span>
+        <span class="tag">ModuleScripts</span>
+      </div>
+    </div>
+
+    <div class="system-card reveal">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="19" height="19">
+          <path d="M3 6 h18 M3 12 h18 M3 18 h18"/>
+          <circle cx="8" cy="6" r="1.6" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+          <circle cx="10" cy="18" r="1.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <h3>Refactoring &amp; Cleanup</h3>
+      <p>Turning copy-pasted scripts into one modular service that discovers its stations by structure, so adding another one needs no code. Per-instance differences move into attributes, and the originals stay disabled rather than deleted so the change stays reversible.</p>
+      <div class="project-tags">
+        <span class="tag">Modularization</span>
+        <span class="tag">Maintainability</span>
+        <span class="tag">Reversible</span>
+      </div>
+    </div>
+
+    <div class="system-card reveal">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="19" height="19">
+          <rect x="3" y="4" width="18" height="13" rx="2"/>
+          <path d="M8 21 h8 M12 17 v4"/>
+          <path d="M7.5 9.5 L9.5 11 L7.5 12.5"/>
+          <path d="M12 12.5 h4"/>
+        </svg>
+      </div>
+      <h3>UI &amp; HUD Implementation</h3>
+      <p>Reactive settings menus, hotbar and inventory handling, overhead nameplates and progress HUDs — wired so the server stays the source of truth and the interface simply reflects replicated state rather than keeping its own copy.</p>
+      <div class="project-tags">
+        <span class="tag">Vide</span>
+        <span class="tag">Replication</span>
+        <span class="tag">UX</span>
+      </div>
+    </div>
+
+    <div class="system-card reveal">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="19" height="19">
+          <path d="M4 17 c3-9 13-9 16 0"/>
+          <circle cx="12" cy="17" r="2.2"/>
+          <path d="M12 5 v2 M5 8 l1.4 1.4 M19 8 l-1.4 1.4"/>
+        </svg>
+      </div>
+      <h3>Debugging &amp; Live Verification</h3>
+      <p>Tracking down the ones that don't reproduce on paper — replication fighting client-side smoothing, frame-of-reference mismatches, ordering traps at startup. I verify in a running session and measure the result rather than calling it fixed.</p>
+      <div class="project-tags">
+        <span class="tag">Profiling</span>
+        <span class="tag">Root Cause</span>
+        <span class="tag">Testing</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tech-stack">
+  <div class="section-head">
+    <div class="kicker">Tech Stack</div>
+    <h2>Toolkit</h2>
+    <p class="section-sub">The tools I reach for to keep things fast, readable, and easy to maintain.</p>
+  </div>
+
+  <div class="stack-groups">
+    <div class="stack-group">
+      <h3>Programming</h3>
+      <div class="stack-chips">
+        <div class="tech-item">
+          <!-- Drop your own icon at Images/luau-icon.png to replace this badge -->
+          <span class="t-icon brand brand-luau">
+            <img src="Images/luau-icon.png" alt="Luau"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" viewBox="0 0 24 24" fill="#8fb8ff"><path d="M12 2 L20 7 L20 17 L12 22 L4 17 L4 7 Z" opacity="0.3"/><path d="M12 5.2c-.55 3-2.2 4.6-4.6 5.2 2.4.6 4.05 2.2 4.6 5.2.55-3 2.2-4.6 4.6-5.2-2.4-.6-4.05-2.2-4.6-5.2Z"/></svg>
+          </span>
+          <span class="t-name">Luau</span>
+        </div>
+        <div class="tech-item">
+          <!-- Drop your own icon at Images/modulescripts-icon.png to replace this badge -->
+          <span class="t-icon brand brand-modulescripts">
+            <img src="Images/modulescripts-icon.png" alt="ModuleScripts"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="#9fb0cc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L21 8 L21 16 L12 21 L3 16 L3 8 Z"/><path d="M3 8 L12 13 L21 8"/><path d="M12 13 L12 21"/></svg>
+          </span>
+          <span class="t-name">ModuleScripts</span>
+        </div>
+        <div class="tech-item">
+          <span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6 L4 18 C4 19.6 7.6 21 12 21 C16.4 21 20 19.6 20 18 L20 6"/><path d="M4 12 C4 13.6 7.6 15 12 15 C16.4 15 20 13.6 20 12"/></svg></span>
+          <span class="t-name">DataStores</span>
+        </div>
+        <div class="tech-item">
+          <span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.8"/><path d="M8.5 8.5 a6 6 0 0 0 0 7"/><path d="M15.5 8.5 a6 6 0 0 1 0 7"/><path d="M5.5 5.5 a10.5 10.5 0 0 0 0 13"/><path d="M18.5 5.5 a10.5 10.5 0 0 1 0 13"/></svg></span>
+          <span class="t-name">Server/Client Communication</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack-group">
+      <h3>Libraries</h3>
+      <div class="stack-chips">
+        <div class="tech-item">
+          <span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 h16 v13 H4 Z"/><path d="M4 9.5 h16"/><path d="M7 13 h5 M7 16 h8"/></svg></span>
+          <span class="t-name">ProfileStore</span>
+        </div>
+        <div class="tech-item">
+          <span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10 l2.5 2 L7 14"/><path d="M12.5 14.5 h4.5"/></svg></span>
+          <span class="t-name">Cmdr</span>
+        </div>
+        <div class="tech-item">
+          <span class="t-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.4"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(60 12 12)"/></svg></span>
+          <span class="t-name">Vide</span>
+        </div>
+        <div class="tech-item">
+          <!-- Drop your own icon at Images/knit-icon.png to replace this badge -->
+          <span class="t-icon brand brand-knit">
+            <img src="Images/knit-icon.png" alt="Knit"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="#7fe3d4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.3"/><circle cx="18" cy="6" r="2.3"/><circle cx="6" cy="18" r="2.3"/><circle cx="18" cy="18" r="2.3"/><path d="M8.3 6 h7.4 M6 8.3 v7.4 M18 8.3 v7.4 M8.3 18 h7.4"/><path d="M7.6 7.6 L16.4 16.4 M16.4 7.6 L7.6 16.4" opacity="0.45"/></svg>
+          </span>
+          <span class="t-name">Knit</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack-group">
+      <h3>Development</h3>
+      <div class="stack-chips">
+        <div class="tech-item">
+          <!-- Drop your own icon at Images/roblox-studio-icon.png to replace this badge -->
+          <span class="t-icon brand brand-studio">
+            <img src="Images/roblox-studio-icon.png" alt="Roblox Studio"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" viewBox="0 0 24 24" fill="#5b9bf0"><path d="M4.2 8.6 15.4 4l4.4 11.4L8.6 20Z" opacity="0.95"/><path d="M4.2 8.6 15.4 4l1.1 2.9-9.7 3.8Z" opacity="0.55"/></svg>
+          </span>
+          <span class="t-name">Roblox Studio</span>
+        </div>
+        <div class="tech-item">
+          <span class="t-icon brand brand-github"><svg viewBox="0 0 24 24" fill="#e9ebf0"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.07.78 2.15 0 1.55-.01 2.8-.01 3.18 0 .31.21.68.8.56A10.52 10.52 0 0 0 23.5 12c0-6.27-5.23-11.5-11.5-11.5Z"/></svg></span>
+          <span class="t-name">GitHub</span>
+        </div>
+        <div class="tech-item">
+          <!-- Drop your own icon at Images/vscode-icon.png to replace this badge -->
+          <span class="t-icon brand brand-vscode">
+            <img src="Images/vscode-icon.png" alt="Visual Studio Code"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="#4aa3f0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 3 L21 4.8 v14.4 L17.5 21 L7 12.6 L3.6 15.4 L2.4 14.2 L5.9 12 L2.4 9.8 L3.6 8.6 L7 11.4 Z"/><path d="M17.5 7.2 v9.6 L10.6 12 Z" fill="#4aa3f0" stroke="none" opacity="0.85"/></svg>
+          </span>
+          <span class="t-name">Visual Studio Code</span>
+        </div>
+        <div class="tech-item">
+          <!-- Drop your own icon at Images/rojo-icon.png to replace this badge -->
+          <span class="t-icon brand brand-rojo">
+            <img src="Images/rojo-icon.png" alt="Rojo"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="#e2703f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="13.4" width="7.4" height="7.4" rx="1.6"/><path d="M10.6 6.9 h4.6 a1.8 1.8 0 0 1 1.8 1.8 v4.7"/></svg>
+          </span>
+          <span class="t-name">Rojo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack-group">
+      <h3>Payments</h3>
+      <div class="stack-chips">
+        <div class="tech-item">
+          <!-- Drop the Robux icon at Images/robux-icon.png to use it instead of this badge -->
+          <span class="t-icon brand-robux">
+            <img src="Images/robux-icon.png" alt="Robux"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" viewBox="0 0 24 24" fill="#52d18a"><path d="M12 3 L19 8 L19 16 L12 21 L5 16 L5 8 Z" opacity="0.95"/></svg>
+          </span>
+          <span class="t-name">Robux</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-head">
+    <div class="kicker">Get In Touch</div>
+    <h2>Let's build something maintainable</h2>
+    <p class="section-sub">Want to work together? Feel free to reach out whenever — I check in daily and typically reply within a few hours.</p>
+    <div class="contact-meta-line">
+      <div>Timezone: <span>GMT+1</span></div>
+      <div>Preferred pricing: <span>Fixed per task</span></div>
+    </div>
+  </div>
+
+  <div class="contact-panel reveal">
+    <div>
+      <h3>Reach out on Discord</h3>
+      <p class="p-sub">Fastest way to get in touch. Usually online daily.</p>
+      <a href="https://discord.com/users/1493679900576714972" target="_blank" rel="noopener noreferrer" class="discord-btn">
+        <span class="d-left">
+          <span class="d-icon">
+            <svg width="21" height="16" viewBox="0 0 127.14 96.36" xmlns="http://www.w3.org/2000/svg" fill="#ffffff">
+              <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21a105.73,105.73,0,0,0,32.17,16.15,77.7,77.7,0,0,0,6.89-11.11,68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14C129.24,52.24,122.9,28.61,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+            </svg>
+          </span>
+          <span class="d-text">
+            <div class="label">DISCORD</div>
+            <div class="handle">@cheesey_altt</div>
+          </span>
+        </span>
+        <span class="status-badge">Open</span>
+      </a>
+    </div>
+    <div class="meta-list">
+      <div class="meta-card">
+        <div class="m-left">
+          <div class="m-icon coin">
+            <img src="Images/robux-icon.png" alt="Robux"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            <svg style="display:none;" width="26" height="26" viewBox="0 0 24 24" fill="#52d18a"><path d="M12 3 L19 8 L19 16 L12 21 L5 16 L5 8 Z" opacity="0.95"/></svg>
+          </div>
+          <div>
+            <div class="m-label">Payments</div>
+            <div class="m-value">Robux</div>
           </div>
         </div>
-      </article>
-
-    </div>
-  </section>
-</div>
-
-<!-- ============ LIVE GAMES ============ -->
-<div class="wrap">
-  <section id="games">
-    <div class="sec-head">
-      <p class="sec-label"><span class="num">02</span> Live games</p>
-      <h2>Published experiences</h2>
-    </div>
-    <div class="notice">
-      <h3>Nothing published under my name yet</h3>
-      <p>
-        The work above is contract scripting on projects that are still in development, so there is
-        no public place to link. When something I worked on goes live, it gets listed here with the
-        role I actually held on it.
-      </p>
-    </div>
-  </section>
-</div>
-
-<!-- ============ CAPABILITIES ============ -->
-<div class="wrap">
-  <section id="capabilities">
-    <div class="sec-head">
-      <p class="sec-label"><span class="num">03</span> Capabilities</p>
-      <h2>What I take from setup to delivery</h2>
-    </div>
-
-    <div class="caps">
-      <div class="cap">
-        <h3>Admin and moderation tooling</h3>
-        <p>
-          Console commands with rank based permissions resolved from group role, argument
-          autocomplete that will not suggest anything the command would go on to refuse, and
-          DataStore backed records kept as an audit log that never gates anything on its own.
-        </p>
+        <span class="status-badge">Negotiable</span>
       </div>
-      <div class="cap">
-        <h3>Data and persistence</h3>
-        <p>
-          Profile based saving with careful load and release ordering, plus separate stores for the
-          cases where a profile's session lock gets in the way. Inventory layout, settings and
-          unlocked titles all survive a rejoin, validated server side so a client can only rearrange
-          its own things.
-        </p>
-      </div>
-      <div class="cap">
-        <h3>Config driven gameplay</h3>
-        <p>
-          Cooldowns, movement feel, progression pacing and combat feedback kept in exposed tables, so
-          a designer can rebalance without opening the logic and an iteration is a number change
-          rather than a rewrite.
-        </p>
-      </div>
-      <div class="cap">
-        <h3>Refactoring and cleanup</h3>
-        <p>
-          Turning copy pasted scripts into one service that finds its own stations by structure, so
-          adding another needs no code. Per instance differences move into attributes, and the
-          originals stay disabled rather than deleted so the change can be undone.
-        </p>
-      </div>
-      <div class="cap">
-        <h3>Interface and HUD work</h3>
-        <p>
-          Settings menus, hotbar and inventory handling, overhead nameplates and progress bars, wired
-          so the server stays the source of truth and the interface reflects replicated state instead
-          of keeping its own copy.
-        </p>
-      </div>
-      <div class="cap">
-        <h3>Debugging and live verification</h3>
-        <p>
-          The bugs that do not reproduce on paper: replication fighting client side smoothing, frame
-          of reference mismatches, ordering traps during startup. I check the fix in a running
-          session and measure the result rather than calling it done.
-        </p>
+      <div class="meta-card">
+        <div class="m-left">
+          <div class="m-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+              <circle cx="12" cy="12" r="9"/><path d="M3 12 h18"/>
+              <path d="M12 3 a14 14 0 0 0 0 18 a14 14 0 0 0 0-18"/>
+            </svg>
+          </div>
+          <div>
+            <div class="m-label">Availability</div>
+            <div class="m-value">GMT+1 &middot; Daily check-ins</div>
+          </div>
+        </div>
+        <span class="status-badge">Active</span>
       </div>
     </div>
-  </section>
-</div>
-
-<!-- ============ TOOLS ============ -->
-<div class="wrap">
-  <section id="tools">
-    <div class="sec-head">
-      <p class="sec-label"><span class="num">04</span> Tools</p>
-      <h2>What I work with</h2>
-    </div>
-
-    <div class="tools">
-      <div>
-        <h3>Language</h3>
-        <ul class="tool-list">
-          <li class="tool">
-            <span class="ico">
-              <img src="Images/luau-icon.png" alt=""
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-              <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6"/></svg>
-            </span>
-            Luau
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <img src="Images/modulescripts-icon.png" alt=""
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-              <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5v8l-9 5-9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
-            </span>
-            ModuleScripts
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.6 3.6 3 8 3s8-1.4 8-3V6"/><path d="M4 12c0 1.6 3.6 3 8 3s8-1.4 8-3"/></svg>
-            </span>
-            DataStores
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.8"/><path d="M8.5 8.5a6 6 0 000 7M15.5 8.5a6 6 0 010 7"/><path d="M5.5 5.5a10.5 10.5 0 000 13M18.5 5.5a10.5 10.5 0 010 13"/></svg>
-            </span>
-            Server and client communication
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <h3>Libraries</h3>
-        <ul class="tool-list">
-          <li class="tool">
-            <span class="ico">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 9.5h16M7.5 13h5M7.5 16h8"/></svg>
-            </span>
-            ProfileStore
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M7 10l2.5 2L7 14M12.5 14.5H17"/></svg>
-            </span>
-            Cmdr
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="2.4"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(60 12 12)"/></svg>
-            </span>
-            Vide
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <img src="Images/knit-icon.png" alt=""
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-              <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6.5" cy="6.5" r="2.2"/><circle cx="17.5" cy="6.5" r="2.2"/><circle cx="6.5" cy="17.5" r="2.2"/><circle cx="17.5" cy="17.5" r="2.2"/><path d="M8.7 6.5h6.6M6.5 8.7v6.6M17.5 8.7v6.6M8.7 17.5h6.6"/></svg>
-            </span>
-            Knit
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <h3>Environment</h3>
-        <ul class="tool-list">
-          <li class="tool">
-            <span class="ico">
-              <img src="Images/roblox-studio-icon.png" alt=""
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-              <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 3.4l14 3.8-3.8 14-14-3.8z"/><path d="M10.3 10.3l3.4.9-.9 3.4-3.4-.9z"/></svg>
-            </span>
-            Roblox Studio
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <img src="Images/vscode-icon.png" alt=""
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-              <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 3L21 4.8v14.4L17.5 21 7 12.6l-3.4 2.8-1.2-1.2L5.9 12 2.4 9.8l1.2-1.2L7 11.4z"/></svg>
-            </span>
-            Visual Studio Code
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <img src="Images/rojo-icon.png" alt=""
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-              <svg style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="3.2" width="7.4" height="7.4" rx="1"/><rect x="13.4" y="13.4" width="7.4" height="7.4" rx="1"/><path d="M10.6 6.9h4.6a1.8 1.8 0 011.8 1.8v4.7"/></svg>
-            </span>
-            Rojo
-          </li>
-          <li class="tool">
-            <span class="ico">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 012.9-.39c.98 0 1.97.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.07.78 2.15 0 1.55-.01 2.8-.01 3.18 0 .31.21.68.8.56A10.52 10.52 0 0023.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>
-            </span>
-            GitHub
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ============ CONTACT ============ -->
-<div class="wrap">
-  <section id="contact">
-    <div class="sec-head">
-      <p class="sec-label"><span class="num">05</span> Contact</p>
-      <h2>Get in touch</h2>
-      <p class="sec-intro">
-        Discord is the fastest way to reach me. Tell me what the system needs to do and roughly when
-        you need it, and I will tell you whether I am the right person for it.
-      </p>
-    </div>
-
-    <div class="contact-grid">
-      <div>
-        <a class="discord-link" href="https://discord.com/users/1493679900576714972" target="_blank" rel="noopener noreferrer">
-          <span class="left">
-            <span class="badge">
-              <svg width="19" height="15" viewBox="0 0 127.14 96.36" fill="#ffffff" aria-hidden="true">
-                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21a105.73,105.73,0,0,0,32.17,16.15,77.7,77.7,0,0,0,6.89-11.11,68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14C129.24,52.24,122.9,28.61,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
-              </svg>
-            </span>
-            <span>
-              <span class="k">Discord</span><br>
-              <span class="v">@cheesey_altt</span>
-            </span>
-          </span>
-          <span class="tick">Open</span>
-        </a>
-      </div>
-
-      <div class="facts">
-        <dl>
-          <div class="row"><dt>Availability</dt><dd>Daily check ins</dd></div>
-          <div class="row"><dt>Timezone</dt><dd>GMT+1</dd></div>
-          <div class="row"><dt>Payment</dt><dd>Robux, negotiable</dd></div>
-          <div class="row"><dt>Pricing</dt><dd>Fixed per task</dd></div>
-        </dl>
-      </div>
-    </div>
-  </section>
-</div>
-
-</main>
-
-<footer class="site-footer">
-  <div class="wrap footer-inner">
-    <span>&copy; 2026 Chez</span>
-    <nav aria-label="Footer">
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms &amp; Conditions</a>
-      <a href="#top">Back to top</a>
-    </nav>
   </div>
-</footer>
+</section>
+
+<footer>Designed and built by Chez for portfolio use.</footer>
 
 <script>
-  (function () {
-    var toggle = document.getElementById('navToggle');
-    var list = document.getElementById('navList');
+  // mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navList = document.getElementById('navList');
+  navToggle.addEventListener('click', () => navList.classList.toggle('open'));
+  navList.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => navList.classList.remove('open'))
+  );
 
-    toggle.addEventListener('click', function () {
-      var open = list.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    });
-
-    list.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        list.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    // mark the section currently under the header
-    var links = Array.prototype.slice.call(list.querySelectorAll('a'));
-    var targets = links
-      .map(function (a) { return document.querySelector(a.getAttribute('href')); })
-      .filter(Boolean);
-
-    function mark() {
-      var current = -1;
-      for (var i = 0; i < targets.length; i++) {
-        if (targets[i].getBoundingClientRect().top <= 90) current = i;
-      }
-      var atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
-      if (atEnd) current = targets.length - 1;
-      links.forEach(function (a, i) {
-        if (i === current) { a.setAttribute('aria-current', 'true'); }
-        else { a.removeAttribute('aria-current'); }
-      });
-    }
-    window.addEventListener('scroll', mark, { passive: true });
-    window.addEventListener('resize', mark);
-    mark();
-  })();
-
-  function toggleCode(btn) {
-    var body = btn.closest('.code-block').querySelector('.code-body');
-    var open = body.classList.toggle('open');
-    btn.setAttribute('aria-expanded', String(open));
-    btn.querySelector('.label').textContent = open ? 'Hide full code' : 'Show full code';
+  // collapsible code panels
+  function toggleCode(btn){
+    const body = btn.closest('.mini-code-panel').querySelector('.mini-code-body');
+    const open = body.classList.toggle('expanded');
+    btn.innerHTML = open ? '\u25B4 Hide full code' : '\u25BE Show full code';
   }
+
+  // active link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  const onScroll = () => {
+    const markerY = 150;
+    let current = sections.length ? sections[0].getAttribute('id') : '';
+    sections.forEach(sec => {
+      if (sec.getBoundingClientRect().top <= markerY) current = sec.getAttribute('id');
+    });
+    // only force the last section active once it's genuinely in view, so a
+    // short section just above it doesn't get skipped on short pages
+    const last = sections[sections.length - 1];
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if (atBottom && last.getBoundingClientRect().top <= window.innerHeight * 0.5) {
+      current = last.getAttribute('id');
+    }
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 </script>
 
 </body>
